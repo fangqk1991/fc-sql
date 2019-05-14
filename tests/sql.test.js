@@ -1,5 +1,6 @@
 const FCDatabase = require('../FCDatabase')
 const SQLAdder = require('../SQLAdder')
+const SQLModifier = require('../SQLModifier')
 const SQLSearcher = require('../SQLSearcher')
 const assert = require('assert')
 
@@ -11,11 +12,13 @@ database.init({
   database: 'demo_db',
   username: 'root',
   password: '',
-  timezone: '+08:00'
+  timezone: '+08:00',
+  // logging: false,
 })
 
 const globalSearcher = new SQLSearcher(database)
 globalSearcher.setTable('demo_table')
+globalSearcher.setColumns(['*'])
 
 describe('Test SQL', () => {
   it(`Test FCDatabase`, async () => {
@@ -75,6 +78,24 @@ describe('Test SQL', () => {
 
     const countAfter = await globalSearcher.queryCount()
     assert.ok(countBefore + count === countAfter)
+  })
+
+  it(`Test SQLModifier`, async () => {
+    const dataBefore = await globalSearcher.querySingle()
+    const modifier = new SQLModifier(database)
+    modifier.setTable('demo_table')
+    modifier.updateKV('key1', `K1 - Changed`)
+    modifier.updateKV('key2', `K2 - Changed`)
+    modifier.addConditionKV('uid', dataBefore['uid'])
+    await modifier.execute()
+
+    const searcher = new SQLSearcher(database)
+    searcher.setTable('demo_table')
+    searcher.setColumns(['uid', 'key1', 'key2'])
+    searcher.addConditionKV('uid', dataBefore['uid'])
+    const dataAfter = await searcher.querySingle()
+    assert.ok(dataAfter['key1'] === `K1 - Changed`)
+    assert.ok(dataAfter['key2'] === `K2 - Changed`)
   })
 
   it(`Test SQLSearcher`, async () => {
