@@ -1,4 +1,5 @@
 const FCDatabase = require('../FCDatabase')
+const SQLAdder = require('../SQLAdder')
 const SQLSearcher = require('../SQLSearcher')
 const assert = require('assert')
 
@@ -12,6 +13,9 @@ database.init({
   password: '',
   timezone: '+08:00'
 })
+
+const globalSearcher = new SQLSearcher(database)
+globalSearcher.setTable('demo_table')
 
 describe('Test SQL', () => {
   it(`Test FCDatabase`, async () => {
@@ -55,6 +59,22 @@ describe('Test SQL', () => {
       const items = await database.query('SELECT * FROM demo_table')
       assert.ok(Array.isArray(items) && items.length === 0)
     }
+  })
+
+  it(`Test SQLAdder`, async () => {
+    const countBefore = await globalSearcher.queryCount()
+
+    const count = 5
+    for (let i = 0; i < count; ++i) {
+      const adder = new SQLAdder(database)
+      adder.setTable('demo_table')
+      adder.insertKV('key1', `K1 - ${Math.random()}`)
+      adder.insertKV('key2', `K2 - ${Math.random()}`)
+      await adder.execute()
+    }
+
+    const countAfter = await globalSearcher.queryCount()
+    assert.ok(countBefore + count === countAfter)
   })
 
   it(`Test SQLSearcher`, async () => {
