@@ -60,6 +60,30 @@ class FCDatabase {
     const SQLSearcher = require('./SQLSearcher')
     return new SQLSearcher(this)
   }
+
+  /**
+   * @returns {SQLAdder}
+   */
+  adder() {
+    const SQLAdder = require('./SQLAdder')
+    return new SQLAdder(this)
+  }
+
+  /**
+   * @returns {SQLModifier}
+   */
+  modifier() {
+    const SQLModifier = require('./SQLModifier')
+    return new SQLModifier(this)
+  }
+
+  /**
+   * @returns {SQLRemover}
+   */
+  remover() {
+    const SQLRemover = require('./SQLRemover')
+    return new SQLRemover(this)
+  }
 }
 
 module.exports = FCDatabase
