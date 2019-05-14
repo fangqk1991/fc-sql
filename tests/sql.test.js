@@ -3,6 +3,7 @@ const SQLAdder = require('../SQLAdder')
 const SQLModifier = require('../SQLModifier')
 const SQLRemover = require('../SQLRemover')
 const SQLSearcher = require('../SQLSearcher')
+const DBTools = require('../DBTools')
 const assert = require('assert')
 
 const database = FCDatabase.getInstance()
@@ -130,5 +131,45 @@ describe('Test SQL', () => {
     const items = await searcher.queryList()
     assert.ok(Array.isArray(items))
     assert.ok(items.length === count)
+  })
+
+  it(`Test DBTools`, async () => {
+    const handler = {
+      database: database,
+      table: 'demo_table',
+      primaryKey: 'uid',
+      cols: function () {
+        return [
+          'uid',
+          'key1',
+          'key2',
+        ]
+      },
+      insertableCols: function () {
+        return this.cols()
+      },
+      modifiableCols: function () {
+        return [
+          'key1',
+          'key2',
+        ]
+      },
+    }
+    const tools = new DBTools(handler)
+    const countBefore = await tools.fetchCount({})
+    console.log(await tools.fetchList({}, -1))
+
+    const count = 5
+    for (let i = 0; i < count; ++i) {
+      await tools.add({
+        key1: `K1 - ${Math.random()}`,
+        key2: `K2 - ${Math.random()}`,
+      })
+    }
+
+    const countAfter = await tools.fetchCount({})
+    assert.ok(countBefore + count === countAfter)
+
+    console.log(await tools.fetchList({}, -1))
   })
 })
