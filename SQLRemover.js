@@ -5,6 +5,7 @@ class SQLRemover extends SQLBuilderBase {
   /**
    * @param database {FCDatabase}
    */
+  // eslint-disable-next-line no-useless-constructor
   constructor(database) {
     super(database)
   }
