@@ -1,6 +1,7 @@
 const FCDatabase = require('../FCDatabase')
 const SQLAdder = require('../SQLAdder')
 const SQLModifier = require('../SQLModifier')
+const SQLRemover = require('../SQLRemover')
 const SQLSearcher = require('../SQLSearcher')
 const assert = require('assert')
 
@@ -96,6 +97,29 @@ describe('Test SQL', () => {
     const dataAfter = await searcher.querySingle()
     assert.ok(dataAfter['key1'] === `K1 - Changed`)
     assert.ok(dataAfter['key2'] === `K2 - Changed`)
+  })
+
+  it(`Test SQLRemover`, async () => {
+    const countBefore = await globalSearcher.queryCount()
+
+    const count = Math.floor(countBefore / 2)
+
+    for (let i = 0; i < count; ++i) {
+      const dataBefore = await globalSearcher.querySingle()
+      const remover = new SQLRemover(database)
+      remover.setTable('demo_table')
+      remover.addConditionKV('uid', dataBefore['uid'])
+      await remover.execute()
+
+      const searcher = new SQLSearcher(database)
+      searcher.setTable('demo_table')
+      searcher.setColumns(['uid', 'key1', 'key2'])
+      searcher.addConditionKV('uid', dataBefore['uid'])
+      assert.ok(await searcher.queryCount() === 0)
+    }
+
+    const countAfter = await globalSearcher.queryCount()
+    assert.ok(countBefore - count === countAfter)
   })
 
   it(`Test SQLSearcher`, async () => {

@@ -19,6 +19,9 @@ class SQLSearcher extends SQLBuilderBase {
     this._distinct = true
   }
 
+  /**
+   * @param columns {Array}
+   */
   setColumns(columns) {
     this._queryColumns = columns
   }
