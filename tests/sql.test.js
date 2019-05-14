@@ -157,7 +157,6 @@ describe('Test SQL', () => {
     }
     const tools = new DBTools(handler)
     const countBefore = await tools.fetchCount({})
-    console.log(await tools.fetchList({}, -1))
 
     const count = 5
     for (let i = 0; i < count; ++i) {
@@ -170,6 +169,28 @@ describe('Test SQL', () => {
     const countAfter = await tools.fetchCount({})
     assert.ok(countBefore + count === countAfter)
 
-    console.log(await tools.fetchList({}, -1))
+    const items = await tools.fetchList({}, -1)
+    const watchUID = items[0]['uid']
+    const feed = await tools.searchSingle({
+      uid: watchUID
+    })
+    await tools.update({
+      uid: watchUID,
+      key1: 'K1 - New',
+    })
+    const feed2 = await tools.searchSingle({
+      uid: watchUID
+    })
+    assert.ok(feed.uid === feed2.uid)
+    assert.ok(feed.key2 === feed2.key2)
+    assert.ok(feed2.key1 === 'K1 - New')
+
+    await tools.delete({
+      uid: watchUID
+    })
+    const feed3 = await tools.searchSingle({
+      uid: watchUID
+    })
+    assert.ok(feed3 === null)
   })
 })
