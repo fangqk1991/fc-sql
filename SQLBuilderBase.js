@@ -1,13 +1,13 @@
 const assert = require('assert')
 /* eslint-disable-next-line */
-const Sequelize = require('sequelize')
+const FCDatabase = require('./FCDatabase')
 
 class SQLBuilderBase {
   /**
-   * @param db {Sequelize}
+   * @param database {FCDatabase}
    */
-  constructor(db) {
-    this.database = db
+  constructor(database) {
+    this.database = database
     this.conditionColumns = []
     this.conditionValues = []
   }

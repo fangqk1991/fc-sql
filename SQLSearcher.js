@@ -1,13 +1,12 @@
 const SQLBuilderBase = require('./SQLBuilderBase')
-const Sequelize = require('sequelize')
 const assert = require('assert')
 
 class SQLSearcher extends SQLBuilderBase {
   /**
-   * @param db {Sequelize}
+   * @param database {FCDatabase}
    */
-  constructor(db) {
-    super(db)
+  constructor(database) {
+    super(database)
     this._queryColumns = []
     this._distinct = false
     this._offset = -1
@@ -106,10 +105,7 @@ class SQLSearcher extends SQLBuilderBase {
       query = `${query} LIMIT ${this._offset}, ${this._length}`
     }
 
-    return this.database.query(query, {
-      replacements: stmtValues,
-      type: Sequelize.QueryTypes.SELECT
-    })
+    return this.database.query(query, stmtValues)
   }
 
   /**
@@ -141,10 +137,7 @@ class SQLSearcher extends SQLBuilderBase {
       query = `${query} WHERE ${this.buildConditionStr()}`
     }
 
-    const result = await this.database.query(query, {
-      replacements: this.stmtValues(),
-      type: Sequelize.QueryTypes.SELECT
-    })
+    const result = await this.database.query(query, this.stmtValues())
     return result[0]['count']
   }
 }
