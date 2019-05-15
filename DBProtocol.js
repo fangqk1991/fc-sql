@@ -44,15 +44,6 @@ class DBProtocol {
   modifiableCols() {
     return []
   }
-
-  static bindToClass(clazz) {
-    clazz.dbProtocol = this
-    clazz.prototype.dbProtocol = this
-  }
-
-  static checkClass(clazz) {
-    return clazz.dbProtocol instanceof this
-  }
 }
 
 module.exports = DBProtocol
