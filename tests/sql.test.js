@@ -4,6 +4,7 @@ const SQLModifier = require('../SQLModifier')
 const SQLRemover = require('../SQLRemover')
 const SQLSearcher = require('../SQLSearcher')
 const DBTools = require('../DBTools')
+const DBProtocol = require('../DBProtocol')
 const assert = require('assert')
 
 const database = FCDatabase.getInstance()
@@ -134,28 +135,32 @@ describe('Test SQL', () => {
   })
 
   it(`Test DBTools`, async () => {
-    const handler = {
-      database: database,
-      table: 'demo_table',
-      primaryKey: 'uid',
-      cols: function () {
+    class MyProtocol extends DBProtocol {
+      database() {
+        return database
+      }
+      table() {
+        return 'demo_table'
+      }
+      primaryKey() {
+        return 'uid'
+      }
+      cols() {
         return [
           'uid',
           'key1',
           'key2',
         ]
-      },
-      insertableCols: function () {
-        return this.cols()
-      },
-      modifiableCols: function () {
+      }
+      modifiableCols() {
         return [
           'key1',
           'key2',
         ]
-      },
+      }
     }
-    const tools = new DBTools(handler)
+
+    const tools = new DBTools(new MyProtocol())
     const countBefore = await tools.fetchCount({})
 
     const count = 5

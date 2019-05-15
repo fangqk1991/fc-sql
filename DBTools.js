@@ -1,13 +1,13 @@
 /* eslint-disable-next-line */
-const FCDatabase = require('./FCDatabase')
+const DBProtocol = require('./DBProtocol')
 const assert = require('assert')
 
 class DBTools {
   /**
-   * @param handler {{database: FCDatabase, modifiableCols: (function(): string[]), insertableCols: (function(): string[]), cols: (function(): string[]), table: string, primaryKey: string}}
+   * @param protocol {DBProtocol}
    */
-  constructor(handler) {
-    this._handler = handler
+  constructor(protocol) {
+    this._protocol = protocol
   }
 
   /**
@@ -15,10 +15,10 @@ class DBTools {
    * @returns {Promise<void>}
    */
   async add(params) {
-    const handler = this._handler
-    const database = handler.database
-    const table = handler.table
-    const cols = handler.insertableCols()
+    const protocol = this._protocol
+    const database = protocol.database()
+    const table = protocol.table()
+    const cols = protocol.insertableCols()
 
     const builder = database.adder()
     builder.setTable(table)
@@ -34,14 +34,14 @@ class DBTools {
    * @returns {Promise<void>}
    */
   async update(params) {
-    const handler = this._handler
-    const database = handler.database
-    const table = handler.table
-    const cols = handler.modifiableCols()
+    const protocol = this._protocol
+    const database = protocol.database()
+    const table = protocol.table()
+    const cols = protocol.modifiableCols()
 
     const builder = database.modifier()
     builder.setTable(table)
-    const pKey = handler.primaryKey
+    const pKey = protocol.primaryKey()
     const pKeys = Array.isArray(pKey) ? pKey : [pKey]
     pKeys.forEach(key => {
       builder.checkPrimaryKey(params, key)
@@ -61,13 +61,13 @@ class DBTools {
    * @returns {Promise<void>}
    */
   async delete(params) {
-    const handler = this._handler
-    const database = handler.database
-    const table = handler.table
+    const protocol = this._protocol
+    const database = protocol.database()
+    const table = protocol.table()
 
     const builder = database.remover()
     builder.setTable(table)
-    const pKey = handler.primaryKey
+    const pKey = protocol.primaryKey()
     const pKeys = Array.isArray(pKey) ? pKey : [pKey]
     pKeys.forEach(key => {
       builder.checkPrimaryKey(params, key)
@@ -81,9 +81,9 @@ class DBTools {
    * @returns {Promise<null|Object>}
    */
   async searchSingle(params, checkPrimaryKey = true) {
-    const handler = this._handler
+    const protocol = this._protocol
     if (checkPrimaryKey) {
-      const pKey = handler.primaryKey
+      const pKey = protocol.primaryKey()
       const pKeys = Array.isArray(pKey) ? pKey : [pKey]
       pKeys.forEach(key => {
         assert.ok(key in params, `${this.constructor.name}: primary key missing.`)
@@ -104,10 +104,10 @@ class DBTools {
    * @returns {Promise<Array<Object>>}
    */
   async fetchList(params = {}, page = 0, length = 20) {
-    const handler = this._handler
-    const database = handler.database
-    const table = handler.table
-    const cols = handler.cols()
+    const protocol = this._protocol
+    const database = protocol.database()
+    const table = protocol.table()
+    const cols = protocol.cols()
 
     const builder = database.searcher()
     builder.setTable(table)
@@ -128,10 +128,10 @@ class DBTools {
    * @returns {Promise<Number>}
    */
   async fetchCount(params = {}) {
-    const handler = this._handler
-    const database = handler.database
-    const table = handler.table
-    const cols = handler.cols()
+    const protocol = this._protocol
+    const database = protocol.database()
+    const table = protocol.table()
+    const cols = protocol.cols()
 
     const builder = database.searcher()
     builder.setTable(table)
