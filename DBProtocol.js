@@ -6,42 +6,42 @@ class DBProtocol {
   /**
    * @returns {FCDatabase}
    */
-  static database() {
+  database() {
     assert.fail(`Must override this function`)
   }
 
   /**
    * @returns {string}
    */
-  static table() {
+  table() {
     assert.fail(`Must override this function`)
   }
 
   /**
    * @returns {string|Array}
    */
-  static primaryKey() {
+  primaryKey() {
     assert.fail(`Must override this function`)
   }
 
   /**
    * @returns {Array.<string>}
    */
-  static cols() {
+  cols() {
     assert.fail(`Must override this function`)
   }
 
   /**
    * @returns {Array.<string>}
    */
-  static insertableCols() {
+  insertableCols() {
     return this.cols()
   }
 
   /**
    * @returns {Array.<string>}
    */
-  static modifiableCols() {
+  modifiableCols() {
     return []
   }
 

@@ -136,23 +136,23 @@ describe('Test SQL', () => {
 
   it(`Test DBTools`, async () => {
     class MyProtocol extends DBProtocol {
-      static database() {
+      database() {
         return database
       }
-      static table() {
+      table() {
         return 'demo_table'
       }
-      static primaryKey() {
+      primaryKey() {
         return 'uid'
       }
-      static cols() {
+      cols() {
         return [
           'uid',
           'key1',
           'key2',
         ]
       }
-      static modifiableCols() {
+      modifiableCols() {
         return [
           'key1',
           'key2',
@@ -160,7 +160,7 @@ describe('Test SQL', () => {
       }
     }
 
-    const tools = new DBTools(MyProtocol)
+    const tools = new DBTools(new MyProtocol())
     const countBefore = await tools.fetchCount({})
 
     const count = 5
