@@ -72,6 +72,15 @@ class SQLSearcher extends SQLBuilderBase {
     assert.ok(this._queryColumns.length > 0, `${this.constructor.name}: _queryColumns missing.`)
   }
 
+  _columnsDesc() {
+    return this._queryColumns.map(column => {
+      const items = column.split('.')
+      const name = items.pop()
+      items.push(`\`${name}\``)
+      return items.join('.')
+    }).join(', ')
+  }
+
   /**
    * @returns {{query: string, stmtValues: Array}}
    */
@@ -79,7 +88,7 @@ class SQLSearcher extends SQLBuilderBase {
     this.checkTableValid()
     this.checkColumnsValid()
 
-    let query = `SELECT ${this._distinct ? 'DISTINCT' : ''} ${this._queryColumns.join(', ')} FROM ${this.table}`
+    let query = `SELECT ${this._distinct ? 'DISTINCT' : ''} ${this._columnsDesc()} FROM ${this.table}`
     const conditions = this.conditions()
     if (conditions.length) {
       query = `${query} WHERE ${this.buildConditionStr()}`
@@ -130,7 +139,7 @@ class SQLSearcher extends SQLBuilderBase {
 
     let query
     if (this._distinct) {
-      query = `SELECT COUNT(DISTINCT ${this._queryColumns.join(', ')}) AS count FROM ${this.table}`
+      query = `SELECT COUNT(DISTINCT ${this._columnsDesc()}) AS count FROM ${this.table}`
     } else {
       query = `SELECT COUNT(*) AS count FROM ${this.table}`
     }
