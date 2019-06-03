@@ -48,8 +48,8 @@ class SQLSearcher extends SQLBuilderBase {
    * @param lengthPerPage {Number}
    */
   setPageInfo(page, lengthPerPage) {
-    this._offset = page * this._length
     this._length = lengthPerPage
+    this._offset = page * this._length
   }
 
   /**
