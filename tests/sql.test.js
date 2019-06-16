@@ -125,13 +125,28 @@ describe('Test SQL', () => {
   })
 
   it(`Test SQLSearcher`, async () => {
-    const searcher = new SQLSearcher(database)
-    searcher.setTable('demo_table')
-    searcher.setColumns(['uid', 'key1', 'key2'])
-    const count = await searcher.queryCount()
-    const items = await searcher.queryList()
-    assert.ok(Array.isArray(items))
-    assert.ok(items.length === count)
+    {
+      const searcher = new SQLSearcher(database)
+      searcher.setTable('demo_table')
+      searcher.setColumns(['uid', 'key1', 'key2'])
+      const count = await searcher.queryCount()
+      const items = await searcher.queryList()
+      assert.ok(Array.isArray(items))
+      assert.ok(items.length === count)
+    }
+    {
+      const searcher = new SQLSearcher(database)
+      searcher.setTable('demo_table')
+      searcher.setColumns([
+        'demo_table.uid AS uid',
+        'demo_table.key1 AS key1',
+        'demo_table.key2 AS key2',
+      ])
+      const count = await searcher.queryCount()
+      const items = await searcher.queryList()
+      assert.ok(Array.isArray(items))
+      assert.ok(items.length === count)
+    }
   })
 
   it(`Test DBTools`, async () => {

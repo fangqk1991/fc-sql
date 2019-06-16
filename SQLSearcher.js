@@ -74,10 +74,14 @@ class SQLSearcher extends SQLBuilderBase {
 
   _columnsDesc() {
     return this._queryColumns.map(column => {
-      const items = column.split('.')
-      const name = items.pop()
-      items.push(`\`${name}\``)
-      return items.join('.')
+      const [keyStr, ...others] = column.trim().split(' ')
+
+      const formattedKeyStr = keyStr.split('.').map(item => `\`${item.replace(new RegExp('`', 'g'), '')}\``).join('.')
+      if (others.length > 0) {
+        const key = others.pop()
+        others.push(`\`${key.replace(new RegExp('`', 'g'), '')}\``)
+      }
+      return [formattedKeyStr, ...others].join(' ')
     }).join(', ')
   }
 
