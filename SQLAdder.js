@@ -21,10 +21,24 @@ class SQLAdder extends SQLBuilderBase {
    */
   async execute() {
     this.checkTableValid()
-    assert.ok(this._insertKeys.length > 0, `${this.constructor.name}: insertKeys missing.`)
 
-    const query = `INSERT INTO ${this.table}(${this._insertKeys.join(', ')}) VALUES (${Array(this.stmtValues().length).fill('?').join(', ')})`
-    await this.database.update(query, this.stmtValues())
+    const keys = this._insertKeys
+    const values = this.stmtValues()
+
+    assert.ok(this._insertKeys.length > 0, `${this.constructor.name}: insertKeys missing.`)
+    assert.ok(keys.length === values.length, `${this.constructor.name}: the length of keys and values is not equal.`)
+
+    const keys2 = []
+    const values2 = []
+    for (let i = 0; i < values.length; ++i) {
+      if (values[i] !== null) {
+        keys2.push(keys[i])
+        values2.push(values[i])
+      }
+    }
+
+    const query = `INSERT INTO ${this.table}(${keys2.join(', ')}) VALUES (${Array(values2.length).fill('?').join(', ')})`
+    await this.database.update(query, values2)
   }
 
   /**
