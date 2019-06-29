@@ -1,6 +1,6 @@
 {
   "name": "fc-sql",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "A simple sql framework for node.",
   "main": "index.js",
   "repository": "https://github.com/fangqk1991/fc-sql.git",

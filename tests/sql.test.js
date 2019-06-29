@@ -141,6 +141,7 @@ describe('Test SQL', () => {
         'demo_table.uid AS uid',
         'demo_table.key1 AS key1',
         'demo_table.key2 AS key2',
+        'CONCAT(demo_table.key1, demo_table.key2) AS full_name',
       ])
       const count = await searcher.queryCount()
       const items = await searcher.queryList()
