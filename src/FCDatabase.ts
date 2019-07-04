@@ -60,7 +60,7 @@ export class FCDatabase {
    * @returns {SQLSearcher}
    */
   searcher() {
-    const SQLSearcher = require('./SQLSearcher')
+    const SQLSearcher = require('./SQLSearcher').SQLSearcher
     return new SQLSearcher(this)
   }
 
@@ -68,7 +68,7 @@ export class FCDatabase {
    * @returns {SQLAdder}
    */
   adder() {
-    const SQLAdder = require('./SQLAdder')
+    const SQLAdder = require('./SQLAdder').SQLAdder
     return new SQLAdder(this)
   }
 
@@ -76,7 +76,7 @@ export class FCDatabase {
    * @returns {SQLModifier}
    */
   modifier() {
-    const SQLModifier = require('./SQLModifier')
+    const SQLModifier = require('./SQLModifier').SQLModifier
     return new SQLModifier(this)
   }
 
@@ -84,7 +84,7 @@ export class FCDatabase {
    * @returns {SQLRemover}
    */
   remover() {
-    const SQLRemover = require('./SQLRemover')
+    const SQLRemover = require('./SQLRemover').SQLRemover
     return new SQLRemover(this)
   }
 }

@@ -5,7 +5,7 @@
   "main": "lib/index.js",
   "repository": "https://github.com/fangqk1991/fc-sql.git",
   "scripts": {
-    "test": "nyc mocha tests/**/*.test.js --timeout 10000 --exit",
+    "test": "tsc && nyc mocha tests/**/*.test.js --timeout 10000 --exit",
     "lint": "eslint . --fix --cache",
     "build": "tsc"
   },
