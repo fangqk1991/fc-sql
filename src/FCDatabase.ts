@@ -1,4 +1,8 @@
 import { QueryTypes, Sequelize } from 'sequelize'
+import { SQLSearcher } from "./SQLSearcher"
+import { SQLAdder } from "./SQLAdder"
+import { SQLModifier } from './SQLModifier'
+import { SQLRemover } from "./SQLRemover"
 
 const _instanceMap: {[key: string]: FCDatabase} = {}
 
@@ -26,14 +30,14 @@ export class FCDatabase {
     this._options = options
   }
 
-  async query(query: string, replacements: (string|number)[] = []): Promise<{[key: string]: any}[]> {
+  async query(query: string, replacements: (string|number|null)[] = []): Promise<{[key: string]: any}[]> {
     return this._db().query(query, {
       replacements: replacements,
       type: QueryTypes.SELECT
     })
   }
 
-  async update(query: string, replacements: (string|number)[] = []): Promise<any> {
+  async update(query: string, replacements: (string|number|null)[] = []): Promise<any> {
     return this._db().query(query, {
       replacements: replacements,
     })
@@ -46,32 +50,19 @@ export class FCDatabase {
     return this.__theDatabase
   }
 
-  searcher() {
-    const SQLSearcher = require('./SQLSearcher').SQLSearcher
+  searcher(): SQLSearcher {
     return new SQLSearcher(this)
   }
 
-  /**
-   * @returns {SQLAdder}
-   */
-  adder() {
-    const SQLAdder = require('./SQLAdder').SQLAdder
+  adder(): SQLAdder {
     return new SQLAdder(this)
   }
 
-  /**
-   * @returns {SQLModifier}
-   */
-  modifier() {
-    const SQLModifier = require('./SQLModifier').SQLModifier
+  modifier(): SQLModifier {
     return new SQLModifier(this)
   }
 
-  /**
-   * @returns {SQLRemover}
-   */
-  remover() {
-    const SQLRemover = require('./SQLRemover').SQLRemover
+  remover(): SQLRemover {
     return new SQLRemover(this)
   }
 }

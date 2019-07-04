@@ -3,9 +3,9 @@ import * as assert from 'assert'
 
 export class SQLModifier extends SQLBuilderBase {
   _updateColumns: string[] = []
-  _updateValues: (string|number)[] = []
+  _updateValues: (string|number|null)[] = []
 
-  updateKV(key: string, value: string): void {
+  updateKV(key: string, value: string | number | null): void {
     this._updateColumns.push(`${key} = ?`)
     this._updateValues.push(value)
   }
@@ -19,7 +19,7 @@ export class SQLModifier extends SQLBuilderBase {
     await this.database.update(query, this.stmtValues())
   }
 
-  stmtValues(): (string | number)[] {
+  stmtValues(): (string | number | null)[] {
     return this._updateValues.concat(this.conditionValues)
   }
 }

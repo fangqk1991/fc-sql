@@ -3,9 +3,9 @@ import * as assert from 'assert'
 
 export class SQLAdder extends SQLBuilderBase {
   _insertKeys: string[] = []
-  _insertValues: (string|number)[] = []
+  _insertValues: (string|number|null)[] = []
 
-  insertKV(key: string, value: string): void {
+  insertKV(key: string, value: (string|number|null)): void {
     this._insertKeys.push(key)
     this._insertValues.push(value)
   }
@@ -32,7 +32,7 @@ export class SQLAdder extends SQLBuilderBase {
     await this.database.update(query, values2)
   }
 
-  stmtValues(): (string | number)[] {
+  stmtValues(): (string | number | null)[] {
     return this._insertValues
   }
 }

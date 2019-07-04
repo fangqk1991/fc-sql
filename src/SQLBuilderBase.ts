@@ -35,7 +35,7 @@ export class SQLBuilderBase {
     return this.conditionColumns
   }
 
-  stmtValues(): (string | number)[] {
+  stmtValues(): (string | number | null)[] {
     return this.conditionValues
   }
 

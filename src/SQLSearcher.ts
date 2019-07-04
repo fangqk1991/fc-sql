@@ -66,7 +66,7 @@ export class SQLSearcher extends SQLBuilderBase {
     }).join(', ')
   }
 
-  exportSQL(): { query: string; stmtValues: (string|number)[] } {
+  exportSQL(): { query: string; stmtValues: (string|number|null)[] } {
     this.checkTableValid()
     this.checkColumnsValid()
 
