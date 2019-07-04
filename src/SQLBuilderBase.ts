@@ -4,7 +4,7 @@ import * as assert from 'assert'
 export class SQLBuilderBase {
   database: FCDatabase
   conditionColumns: string[] = []
-  conditionValues: (string|number)[] = []
+  conditionValues: (string | number)[] = []
   table: string = ''
 
   constructor(database: FCDatabase) {
@@ -15,17 +15,17 @@ export class SQLBuilderBase {
     this.table = table
   }
 
-  checkPrimaryKey(params: {[key: string]: (string|number)}, key: string): void {
+  checkPrimaryKey(params: {[key: string]: (string | number)}, key: string): void {
     assert.ok(key in params, `${this.constructor.name}: primary key missing.`)
     this.addConditionKV(key, params[key])
   }
 
-  addConditionKV(key: string, value: string|number): void {
+  addConditionKV(key: string, value: string | number): void {
     this.conditionColumns.push(`(${key} = ?)`)
     this.conditionValues.push(value)
   }
 
-  addSpecialCondition(condition: string, ...args: (string|number)[]): void {
+  addSpecialCondition(condition: string, ...args: (string | number)[]): void {
     assert.ok((condition.match(/\?/g) || []).length === args.length, `${this.constructor.name}: addSpecialCondition: Incorrect number of arguments.`)
     this.conditionColumns.push(`(${condition})`)
     this.conditionValues.push(...args)

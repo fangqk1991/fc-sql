@@ -3,7 +3,7 @@ import * as assert from 'assert'
 
 export class SQLModifier extends SQLBuilderBase {
   _updateColumns: string[] = []
-  _updateValues: (string|number|null)[] = []
+  _updateValues: (string | number | null)[] = []
 
   updateKV(key: string, value: string | number | null): void {
     this._updateColumns.push(`${key} = ?`)

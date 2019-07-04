@@ -3,9 +3,9 @@ import * as assert from 'assert'
 
 export class SQLAdder extends SQLBuilderBase {
   _insertKeys: string[] = []
-  _insertValues: (string|number|null)[] = []
+  _insertValues: (string | number | null)[] = []
 
-  insertKV(key: string, value: (string|number|null)): void {
+  insertKV(key: string, value: (string | number | null)): void {
     this._insertKeys.push(key)
     this._insertValues.push(value)
   }

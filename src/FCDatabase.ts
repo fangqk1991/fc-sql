@@ -30,14 +30,14 @@ export class FCDatabase {
     this._options = options
   }
 
-  async query(query: string, replacements: (string|number|null)[] = []): Promise<{[key: string]: any}[]> {
+  async query(query: string, replacements: (string | number | null)[] = []): Promise<{[key: string]: any}[]> {
     return this._db().query(query, {
       replacements: replacements,
       type: QueryTypes.SELECT
     })
   }
 
-  async update(query: string, replacements: (string|number|null)[] = []): Promise<any> {
+  async update(query: string, replacements: (string | number | null)[] = []): Promise<any> {
     return this._db().query(query, {
       replacements: replacements,
     })

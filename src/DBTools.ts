@@ -8,7 +8,7 @@ export class DBTools {
     this._protocol = protocol
   }
 
-  async add(params: {[key: string]: (number|string)}): Promise<void> {
+  async add(params: {[key: string]: (number | string)}): Promise<void> {
     const protocol = this._protocol
     const database = protocol.database()
     const table = protocol.table()
@@ -23,7 +23,7 @@ export class DBTools {
     await builder.execute()
   }
 
-  async update(params: {[key: string]: (number|string)}): Promise<void> {
+  async update(params: {[key: string]: (number | string)}): Promise<void> {
     const protocol = this._protocol
     const database = protocol.database()
     const table = protocol.table()
@@ -46,7 +46,7 @@ export class DBTools {
     await builder.execute()
   }
 
-  async delete(params: {[key: string]: (number|string)}): Promise<void> {
+  async delete(params: {[key: string]: (number | string)}): Promise<void> {
     const protocol = this._protocol
     const database = protocol.database()
     const table = protocol.table()
@@ -61,7 +61,7 @@ export class DBTools {
     await builder.execute()
   }
 
-  async searchSingle(params: {[key: string]: (number|string)}, checkPrimaryKey: boolean = true): Promise<null|{}> {
+  async searchSingle(params: {[key: string]: (number | string)}, checkPrimaryKey: boolean = true): Promise<null|{}> {
     const protocol = this._protocol
     if (checkPrimaryKey) {
       const pKey = protocol.primaryKey()
@@ -78,7 +78,7 @@ export class DBTools {
     return null
   }
 
-  async fetchList(params: {[key: string]: (number|string)} = {}, page: number = 0, length: number = 20): Promise<{[key: string]: any}[]> {
+  async fetchList(params: {[key: string]: (number | string)} = {}, page: number = 0, length: number = 20): Promise<{[key: string]: any}[]> {
     const protocol = this._protocol
     const database = protocol.database()
     const table = protocol.table()
@@ -96,7 +96,7 @@ export class DBTools {
     return builder.queryList()
   }
 
-  async fetchCount(params: {[key: string]: (number|string)} = {}): Promise<number> {
+  async fetchCount(params: {[key: string]: (number | string)} = {}): Promise<number> {
     const protocol = this._protocol
     const database = protocol.database()
     const table = protocol.table()

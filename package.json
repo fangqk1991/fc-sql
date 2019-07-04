@@ -6,8 +6,7 @@
   "typings": "lib/index.d.ts",
   "repository": "https://github.com/fangqk1991/fc-sql.git",
   "scripts": {
-    "test": "tsc && nyc mocha tests/**/*.test.js --timeout 10000 --exit",
-    "test-ts": "mocha --require ts-node/register tests/**/*.test.ts --timeout 10000 --exit",
+    "test": "mocha --require ts-node/register tests/**/*.test.ts --timeout 10000 --exit && tsc && nyc mocha tests/**/*.test.js --timeout 10000 --exit",
     "lint": "eslint . --fix --cache",
     "build": "tsc"
   },
