@@ -1,19 +1,16 @@
-import {SQLBuilderBase} from './SQLBuilderBase'
+import { SQLBuilderBase } from './SQLBuilderBase'
 import * as assert from 'assert'
 
 export class SQLAdder extends SQLBuilderBase {
-  _insertKeys = []
-  _insertValues = []
+  _insertKeys: string[] = []
+  _insertValues: (string|number)[] = []
 
-  insertKV(key, value) {
+  insertKV(key: string, value: string): void {
     this._insertKeys.push(key)
     this._insertValues.push(value)
   }
 
-  /**
-   * @returns {Promise<void>}
-   */
-  async execute() {
+  async execute(): Promise<void> {
     this.checkTableValid()
 
     const keys = this._insertKeys
@@ -35,10 +32,7 @@ export class SQLAdder extends SQLBuilderBase {
     await this.database.update(query, values2)
   }
 
-  /**
-   * @returns {Array.<string|Number>}
-   */
-  stmtValues() {
+  stmtValues(): (string | number)[] {
     return this._insertValues
   }
 }

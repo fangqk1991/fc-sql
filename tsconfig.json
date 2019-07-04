@@ -7,7 +7,9 @@
     "sourceMap": true,
     "moduleResolution": "node",
     "outDir": "lib",
-    "target": "es5"
+    "strict": true,
+    "target": "es5",
+    "noImplicitAny": true
   },
   "include": [
     "src"

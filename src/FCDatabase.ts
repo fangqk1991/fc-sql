@@ -1,15 +1,12 @@
 import { QueryTypes, Sequelize } from 'sequelize'
 
-const _instanceMap = {}
+const _instanceMap: {[key: string]: FCDatabase} = {}
 
 export class FCDatabase {
-  __theDatabase = null
-  _options = null
+  __theDatabase?: Sequelize
+  _options?: {}
 
-  /**
-   * @returns {FCDatabase}
-   */
-  static instanceWithName(name) {
+  static instanceWithName(name: string): FCDatabase {
     let obj = null
     if (name in _instanceMap && _instanceMap[name] instanceof FCDatabase) {
       obj = _instanceMap[name]
@@ -21,44 +18,34 @@ export class FCDatabase {
     return obj
   }
 
-  /**
-   * @returns {FCDatabase}
-   */
-  static getInstance() {
+  static getInstance(): FCDatabase {
     return FCDatabase.instanceWithName('default')
   }
 
-  init(options) {
+  init(options: {}): void {
     this._options = options
   }
 
-  async query(query, replacements = []) {
+  async query(query: string, replacements: (string|number)[] = []): Promise<{[key: string]: any}[]> {
     return this._db().query(query, {
       replacements: replacements,
       type: QueryTypes.SELECT
     })
   }
 
-  async update(query, replacements = []) {
+  async update(query: string, replacements: (string|number)[] = []): Promise<any> {
     return this._db().query(query, {
       replacements: replacements,
     })
   }
 
-  /**
-   * @returns {Sequelize}
-   * @private
-   */
-  _db() {
+  _db(): Sequelize {
     if (!this.__theDatabase) {
       this.__theDatabase = new Sequelize(this._options)
     }
     return this.__theDatabase
   }
 
-  /**
-   * @returns {SQLSearcher}
-   */
   searcher() {
     const SQLSearcher = require('./SQLSearcher').SQLSearcher
     return new SQLSearcher(this)

@@ -1,47 +1,10 @@
-/* eslint-disable-next-line */
-import {FCDatabase} from './FCDatabase'
-import * as assert from 'assert'
+import { FCDatabase } from './FCDatabase'
 
-export class DBProtocol {
-  /**
-   * @returns {FCDatabase}
-   */
-  database() {
-    assert.fail(`Must override this function`)
-  }
-
-  /**
-   * @returns {string}
-   */
-  table() {
-    assert.fail(`Must override this function`)
-  }
-
-  /**
-   * @returns {string|Array}
-   */
-  primaryKey() {
-    assert.fail(`Must override this function`)
-  }
-
-  /**
-   * @returns {Array.<string>}
-   */
-  cols() {
-    assert.fail(`Must override this function`)
-  }
-
-  /**
-   * @returns {Array.<string>}
-   */
-  insertableCols() {
-    return this.cols()
-  }
-
-  /**
-   * @returns {Array.<string>}
-   */
-  modifiableCols() {
-    return []
-  }
+export interface DBProtocol {
+  database(): FCDatabase;
+  table(): string;
+  primaryKey(): (string|string[]);
+  cols(): string[];
+  insertableCols(): string[];
+  modifiableCols(): string[];
 }

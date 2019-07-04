@@ -2,11 +2,7 @@ import {SQLBuilderBase} from './SQLBuilderBase'
 import * as assert from 'assert'
 
 export class SQLRemover extends SQLBuilderBase {
-
-  /**
-   * @returns {Promise<void>}
-   */
-  async execute() {
+  async execute(): Promise<void> {
     this.checkTableValid()
     assert.ok(this.conditionColumns.length > 0, `${this.constructor.name}: conditionColumns missing.`)
 

@@ -1,6 +1,6 @@
 {
   "name": "fc-sql",
-  "version": "0.3.4",
+  "version": "1.0.0",
   "description": "A simple sql framework for node.",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
@@ -15,15 +15,21 @@
   "license": "MIT",
   "devDependencies": {
     "@types/assert": "^1.4.2",
+    "@types/mocha": "^5.2.7",
     "@types/sequelize": "^4.28.3",
-    "eslint": "^5.16.0",
+    "@typescript-eslint/eslint-plugin": "^1.11.0",
+    "@typescript-eslint/parser": "^1.11.0",
+    "eslint": "^6.0.1",
+    "eslint-config-prettier": "^6.0.0",
     "eslint-config-standard": "^12.0.0",
     "eslint-plugin-import": "^2.16.0",
     "eslint-plugin-node": "^8.0.1",
+    "eslint-plugin-prettier": "^3.1.0",
     "eslint-plugin-promise": "^4.1.1",
     "eslint-plugin-standard": "^4.0.0",
     "mocha": "^6.1.4",
     "nyc": "^14.0.0",
+    "prettier": "^1.18.2",
     "typescript": "^3.5.2"
   },
   "dependencies": {
@@ -33,5 +39,8 @@
   },
   "files": [
     "lib/*"
-  ]
+  ],
+  "nyc": {
+    "sourceMap": false
+  }
 }

@@ -1,19 +1,16 @@
-import {SQLBuilderBase} from './SQLBuilderBase'
+import { SQLBuilderBase } from './SQLBuilderBase'
 import * as assert from 'assert'
 
 export class SQLModifier extends SQLBuilderBase {
-  _updateColumns = []
-  _updateValues = []
+  _updateColumns: string[] = []
+  _updateValues: (string|number)[] = []
 
-  updateKV(key, value) {
+  updateKV(key: string, value: string): void {
     this._updateColumns.push(`${key} = ?`)
     this._updateValues.push(value)
   }
 
-  /**
-   * @returns {Promise<void>}
-   */
-  async execute() {
+  async execute(): Promise<void> {
     this.checkTableValid()
     assert.ok(this._updateColumns.length > 0, `${this.constructor.name}: updateColumns missing.`)
     assert.ok(this.conditionColumns.length > 0, `${this.constructor.name}: conditionColumns missing.`)
@@ -22,10 +19,7 @@ export class SQLModifier extends SQLBuilderBase {
     await this.database.update(query, this.stmtValues())
   }
 
-  /**
-   * @returns {Array.<string|Number>}
-   */
-  stmtValues() {
+  stmtValues(): (string | number)[] {
     return this._updateValues.concat(this.conditionValues)
   }
 }

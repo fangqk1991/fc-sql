@@ -1,18 +1,14 @@
-/* eslint-disable-next-line */
-import {DBProtocol} from './DBProtocol'
+import { DBProtocol } from './DBProtocol'
 import * as assert from 'assert'
 
 export class DBTools {
-  /**
-   * @param protocol {DBProtocol}
-   */
-  constructor(private _protocol) { }
+  _protocol: DBProtocol
 
-  /**
-   * @param params {Object}
-   * @returns {Promise<void>}
-   */
-  async add(params) {
+  constructor(protocol: DBProtocol) {
+    this._protocol = protocol
+  }
+
+  async add(params: {[key: string]: (number|string)}): Promise<void> {
     const protocol = this._protocol
     const database = protocol.database()
     const table = protocol.table()
@@ -20,18 +16,14 @@ export class DBTools {
 
     const builder = database.adder()
     builder.setTable(table)
-    cols.forEach(col => {
+    cols.forEach((col): void => {
       const value = (col in params) ? params[col] : null
       builder.insertKV(col, value)
     })
     await builder.execute()
   }
 
-  /**
-   * @param params {Object}
-   * @returns {Promise<void>}
-   */
-  async update(params) {
+  async update(params: {[key: string]: (number|string)}): Promise<void> {
     const protocol = this._protocol
     const database = protocol.database()
     const table = protocol.table()
@@ -41,11 +33,11 @@ export class DBTools {
     builder.setTable(table)
     const pKey = protocol.primaryKey()
     const pKeys = Array.isArray(pKey) ? pKey : [pKey]
-    pKeys.forEach(key => {
+    pKeys.forEach((key): void => {
       builder.checkPrimaryKey(params, key)
       delete params[key]
     })
-    cols.forEach(col => {
+    cols.forEach((col): void => {
       if (col in params) {
         builder.updateKV(col, params[col])
       }
@@ -54,11 +46,7 @@ export class DBTools {
     await builder.execute()
   }
 
-  /**
-   * @param params {Object}
-   * @returns {Promise<void>}
-   */
-  async delete(params) {
+  async delete(params: {[key: string]: (number|string)}): Promise<void> {
     const protocol = this._protocol
     const database = protocol.database()
     const table = protocol.table()
@@ -67,23 +55,18 @@ export class DBTools {
     builder.setTable(table)
     const pKey = protocol.primaryKey()
     const pKeys = Array.isArray(pKey) ? pKey : [pKey]
-    pKeys.forEach(key => {
+    pKeys.forEach((key): void => {
       builder.checkPrimaryKey(params, key)
     })
     await builder.execute()
   }
 
-  /**
-   * @param params {Object}
-   * @param checkPrimaryKey {Boolean}
-   * @returns {Promise<null|Object>}
-   */
-  async searchSingle(params, checkPrimaryKey = true) {
+  async searchSingle(params: {[key: string]: (number|string)}, checkPrimaryKey: boolean = true): Promise<null|{}> {
     const protocol = this._protocol
     if (checkPrimaryKey) {
       const pKey = protocol.primaryKey()
       const pKeys = Array.isArray(pKey) ? pKey : [pKey]
-      pKeys.forEach(key => {
+      pKeys.forEach((key): void => {
         assert.ok(key in params, `${this.constructor.name}: primary key missing.`)
       })
     }
@@ -95,13 +78,7 @@ export class DBTools {
     return null
   }
 
-  /**
-   * @param params {Object}
-   * @param page {Number}
-   * @param length {Number}
-   * @returns {Promise<Array<Object>>}
-   */
-  async fetchList(params = {}, page = 0, length = 20) {
+  async fetchList(params: {[key: string]: (number|string)} = {}, page: number = 0, length: number = 20): Promise<{[key: string]: any}[]> {
     const protocol = this._protocol
     const database = protocol.database()
     const table = protocol.table()
@@ -110,22 +87,16 @@ export class DBTools {
     const builder = database.searcher()
     builder.setTable(table)
     builder.setPageInfo(page, length)
-    cols.forEach(col => {
+    cols.forEach((col): void => {
       builder.addColumn(col)
     })
     for (const key in params) {
-      if (params.hasOwnProperty(key)) {
-        builder.addConditionKV(key, params[key])
-      }
+      builder.addConditionKV(key, params[key])
     }
     return builder.queryList()
   }
 
-  /**
-   * @param params {Object}
-   * @returns {Promise<Number>}
-   */
-  async fetchCount(params = {}) {
+  async fetchCount(params: {[key: string]: (number|string)} = {}): Promise<number> {
     const protocol = this._protocol
     const database = protocol.database()
     const table = protocol.table()
@@ -133,13 +104,11 @@ export class DBTools {
 
     const builder = database.searcher()
     builder.setTable(table)
-    cols.forEach(col => {
+    cols.forEach((col): void => {
       builder.addColumn(col)
     })
     for (const key in params) {
-      if (params.hasOwnProperty(key)) {
-        builder.addConditionKV(key, params[key])
-      }
+      builder.addConditionKV(key, params[key])
     }
     return builder.queryCount()
   }

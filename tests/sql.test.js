@@ -1,3 +1,4 @@
+/* eslint-disable */
 const {FCDatabase, SQLAdder, SQLModifier, SQLRemover, SQLSearcher, DBTools, DBProtocol } = require('../lib')
 const assert = require('assert')
 
@@ -142,70 +143,5 @@ describe('Test SQL', () => {
       assert.ok(Array.isArray(items))
       assert.ok(items.length === count)
     }
-  })
-
-  it(`Test DBTools`, async () => {
-    class MyProtocol extends DBProtocol {
-      database() {
-        return database
-      }
-      table() {
-        return 'demo_table'
-      }
-      primaryKey() {
-        return 'uid'
-      }
-      cols() {
-        return [
-          'uid',
-          'key1',
-          'key2',
-        ]
-      }
-      modifiableCols() {
-        return [
-          'key1',
-          'key2',
-        ]
-      }
-    }
-
-    const tools = new DBTools(new MyProtocol())
-    const countBefore = await tools.fetchCount({})
-
-    const count = 5
-    for (let i = 0; i < count; ++i) {
-      await tools.add({
-        key1: `K1 - ${Math.random()}`,
-        key2: `K2 - ${Math.random()}`,
-      })
-    }
-
-    const countAfter = await tools.fetchCount({})
-    assert.ok(countBefore + count === countAfter)
-
-    const items = await tools.fetchList({}, -1)
-    const watchUID = items[0]['uid']
-    const feed = await tools.searchSingle({
-      uid: watchUID
-    })
-    await tools.update({
-      uid: watchUID,
-      key1: 'K1 - New',
-    })
-    const feed2 = await tools.searchSingle({
-      uid: watchUID
-    })
-    assert.ok(feed.uid === feed2.uid)
-    assert.ok(feed.key2 === feed2.key2)
-    assert.ok(feed2.key1 === 'K1 - New')
-
-    await tools.delete({
-      uid: watchUID
-    })
-    const feed3 = await tools.searchSingle({
-      uid: watchUID
-    })
-    assert.ok(feed3 === null)
   })
 })

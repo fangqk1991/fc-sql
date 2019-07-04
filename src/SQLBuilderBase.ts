@@ -1,73 +1,49 @@
-/* eslint-disable-next-line */
-import {FCDatabase} from './FCDatabase'
+import { FCDatabase } from './FCDatabase'
 import * as assert from 'assert'
 
 export class SQLBuilderBase {
-  database = null
-  conditionColumns = []
-  conditionValues = []
-  table = null
+  database: FCDatabase
+  conditionColumns: string[] = []
+  conditionValues: (string|number)[] = []
+  table: string = ''
 
-  /**
-   * @param database {FCDatabase}
-   */
-  constructor(database) {
+  constructor(database: FCDatabase) {
     this.database = database
   }
 
-  /**
-   * @param table {string}
-   */
-  setTable(table) {
+  setTable(table: string): void {
     this.table = table
   }
 
-  checkPrimaryKey(params, key) {
+  checkPrimaryKey(params: {[key: string]: (string|number)}, key: string): void {
     assert.ok(key in params, `${this.constructor.name}: primary key missing.`)
     this.addConditionKV(key, params[key])
   }
 
-  /**
-   * @param key {string}
-   * @param value {string|Number}
-   */
-  addConditionKV(key, value) {
+  addConditionKV(key: string, value: string|number): void {
     this.conditionColumns.push(`(${key} = ?)`)
     this.conditionValues.push(value)
   }
 
-  /**
-   * @param condition {string}
-   * @param args
-   */
-  addSpecialCondition(condition, ...args) {
+  addSpecialCondition(condition: string, ...args: (string|number)[]): void {
     assert.ok((condition.match(/\?/g) || []).length === args.length, `${this.constructor.name}: addSpecialCondition: Incorrect number of arguments.`)
     this.conditionColumns.push(`(${condition})`)
     this.conditionValues.push(...args)
   }
 
-  /**
-   * @returns {Array.<string>}
-   */
-  conditions() {
+  conditions(): string[] {
     return this.conditionColumns
   }
 
-  /**
-   * @returns {Array.<string|Number>}
-   */
-  stmtValues() {
+  stmtValues(): (string | number)[] {
     return this.conditionValues
   }
 
-  checkTableValid() {
+  checkTableValid(): void {
     assert.ok(!!this.table, `${this.constructor.name}: table missing.`)
   }
 
-  /**
-   * @returns {string}
-   */
-  buildConditionStr() {
+  buildConditionStr(): string {
     return this.conditions().join(' AND ')
   }
 }
