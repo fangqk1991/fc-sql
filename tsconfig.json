@@ -1,8 +1,10 @@
 {
   "compilerOptions": {
-    "allowJs": true,
     "importHelpers": true,
+    "noEmitHelpers": true,
     "module": "commonjs",
+    "declaration": true,
+    "sourceMap": true,
     "moduleResolution": "node",
     "outDir": "lib",
     "target": "es5"

@@ -3,6 +3,7 @@
   "version": "0.3.4",
   "description": "A simple sql framework for node.",
   "main": "lib/index.js",
+  "typings": "lib/index.d.ts",
   "repository": "https://github.com/fangqk1991/fc-sql.git",
   "scripts": {
     "test": "tsc && nyc mocha tests/**/*.test.js --timeout 10000 --exit",
