@@ -1,14 +1,12 @@
 /* eslint-disable-next-line */
-const DBProtocol = require('./DBProtocol')
-const assert = require('assert')
+import {DBProtocol} from './DBProtocol'
+import * as assert from 'assert'
 
-class DBTools {
+export class DBTools {
   /**
    * @param protocol {DBProtocol}
    */
-  constructor(protocol) {
-    this._protocol = protocol
-  }
+  constructor(private _protocol) { }
 
   /**
    * @param params {Object}
@@ -146,5 +144,3 @@ class DBTools {
     return builder.queryCount()
   }
 }
-
-module.exports = DBTools

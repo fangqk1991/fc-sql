@@ -1,15 +1,9 @@
-const SQLBuilderBase = require('./SQLBuilderBase')
-const assert = require('assert')
+import {SQLBuilderBase} from './SQLBuilderBase'
+import * as assert from 'assert'
 
-class SQLModifier extends SQLBuilderBase {
-  /**
-   * @param database {FCDatabase}
-   */
-  constructor(database) {
-    super(database)
-    this._updateColumns = []
-    this._updateValues = []
-  }
+export class SQLModifier extends SQLBuilderBase {
+  _updateColumns = []
+  _updateValues = []
 
   updateKV(key, value) {
     this._updateColumns.push(`${key} = ?`)
@@ -35,5 +29,3 @@ class SQLModifier extends SQLBuilderBase {
     return this._updateValues.concat(this.conditionValues)
   }
 }
-
-module.exports = SQLModifier

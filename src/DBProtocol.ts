@@ -1,8 +1,8 @@
 /* eslint-disable-next-line */
-const FCDatabase = require('./FCDatabase')
-const assert = require('assert')
+import {FCDatabase} from './FCDatabase'
+import * as assert from 'assert'
 
-class DBProtocol {
+export class DBProtocol {
   /**
    * @returns {FCDatabase}
    */
@@ -45,5 +45,3 @@ class DBProtocol {
     return []
   }
 }
-
-module.exports = DBProtocol

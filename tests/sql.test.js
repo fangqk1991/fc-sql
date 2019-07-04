@@ -1,10 +1,4 @@
-const FCDatabase = require('../FCDatabase')
-const SQLAdder = require('../SQLAdder')
-const SQLModifier = require('../SQLModifier')
-const SQLRemover = require('../SQLRemover')
-const SQLSearcher = require('../SQLSearcher')
-const DBTools = require('../DBTools')
-const DBProtocol = require('../DBProtocol')
+const {FCDatabase, SQLAdder, SQLModifier, SQLRemover, SQLSearcher, DBTools, DBProtocol } = require('../lib')
 const assert = require('assert')
 
 const database = FCDatabase.getInstance()

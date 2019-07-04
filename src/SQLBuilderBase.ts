@@ -1,15 +1,18 @@
-const assert = require('assert')
 /* eslint-disable-next-line */
-const FCDatabase = require('./FCDatabase')
+import {FCDatabase} from './FCDatabase'
+import * as assert from 'assert'
 
-class SQLBuilderBase {
+export class SQLBuilderBase {
+  database = null
+  conditionColumns = []
+  conditionValues = []
+  table = null
+
   /**
    * @param database {FCDatabase}
    */
   constructor(database) {
     this.database = database
-    this.conditionColumns = []
-    this.conditionValues = []
   }
 
   /**
@@ -68,5 +71,3 @@ class SQLBuilderBase {
     return this.conditions().join(' AND ')
   }
 }
-
-module.exports = SQLBuilderBase

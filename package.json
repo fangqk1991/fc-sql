@@ -2,16 +2,19 @@
   "name": "fc-sql",
   "version": "0.3.4",
   "description": "A simple sql framework for node.",
-  "main": "index.js",
+  "main": "lib/index.js",
   "repository": "https://github.com/fangqk1991/fc-sql.git",
   "scripts": {
     "test": "nyc mocha tests/**/*.test.js --timeout 10000 --exit",
-    "lint": "eslint . --fix --cache"
+    "lint": "eslint . --fix --cache",
+    "build": "tsc"
   },
   "keywords": [],
   "author": "fang <me@fangqk.com>",
   "license": "MIT",
   "devDependencies": {
+    "@types/assert": "^1.4.2",
+    "@types/sequelize": "^4.28.3",
     "eslint": "^5.16.0",
     "eslint-config-standard": "^12.0.0",
     "eslint-plugin-import": "^2.16.0",
@@ -19,10 +22,15 @@
     "eslint-plugin-promise": "^4.1.1",
     "eslint-plugin-standard": "^4.0.0",
     "mocha": "^6.1.4",
-    "nyc": "^14.0.0"
+    "nyc": "^14.0.0",
+    "typescript": "^3.5.2"
   },
   "dependencies": {
     "mysql2": "^1.6.5",
-    "sequelize": "^5.8.6"
-  }
+    "sequelize": "^5.8.6",
+    "tslib": "^1.10.0"
+  },
+  "files": [
+    "lib/*"
+  ]
 }

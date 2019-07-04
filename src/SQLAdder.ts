@@ -1,15 +1,9 @@
-const SQLBuilderBase = require('./SQLBuilderBase')
-const assert = require('assert')
+import {SQLBuilderBase} from './SQLBuilderBase'
+import * as assert from 'assert'
 
-class SQLAdder extends SQLBuilderBase {
-  /**
-   * @param database {FCDatabase}
-   */
-  constructor(database) {
-    super(database)
-    this._insertKeys = []
-    this._insertValues = []
-  }
+export class SQLAdder extends SQLBuilderBase {
+  _insertKeys = []
+  _insertValues = []
 
   insertKV(key, value) {
     this._insertKeys.push(key)
@@ -48,5 +42,3 @@ class SQLAdder extends SQLBuilderBase {
     return this._insertValues
   }
 }
-
-module.exports = SQLAdder

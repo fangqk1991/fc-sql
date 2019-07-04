@@ -1,8 +1,11 @@
-const Sequelize = require('sequelize')
+import { QueryTypes, Sequelize } from 'sequelize'
 
 const _instanceMap = {}
 
-class FCDatabase {
+export class FCDatabase {
+  __theDatabase = null
+  _options = null
+
   /**
    * @returns {FCDatabase}
    */
@@ -32,7 +35,7 @@ class FCDatabase {
   async query(query, replacements = []) {
     return this._db().query(query, {
       replacements: replacements,
-      type: Sequelize.QueryTypes.SELECT
+      type: QueryTypes.SELECT
     })
   }
 
@@ -85,5 +88,3 @@ class FCDatabase {
     return new SQLRemover(this)
   }
 }
-
-module.exports = FCDatabase

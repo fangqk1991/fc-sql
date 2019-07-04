@@ -1,19 +1,13 @@
-const SQLBuilderBase = require('./SQLBuilderBase')
-const assert = require('assert')
+import {SQLBuilderBase} from './SQLBuilderBase'
+import * as assert from 'assert'
 
-class SQLSearcher extends SQLBuilderBase {
-  /**
-   * @param database {FCDatabase}
-   */
-  constructor(database) {
-    super(database)
-    this._queryColumns = []
-    this._distinct = false
-    this._offset = -1
-    this._length = 1
-    this._optionStr = ''
-    this._orderRules = []
-  }
+export class SQLSearcher extends SQLBuilderBase {
+  _queryColumns = []
+  _distinct = false
+  _offset = -1
+  _length = 1
+  _optionStr = ''
+  _orderRules = []
 
   markDistinct() {
     this._distinct = true
@@ -159,5 +153,3 @@ class SQLSearcher extends SQLBuilderBase {
     return result[0]['count']
   }
 }
-
-module.exports = SQLSearcher

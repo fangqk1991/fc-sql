@@ -1,14 +1,7 @@
-const SQLBuilderBase = require('./SQLBuilderBase')
-const assert = require('assert')
+import {SQLBuilderBase} from './SQLBuilderBase'
+import * as assert from 'assert'
 
-class SQLRemover extends SQLBuilderBase {
-  /**
-   * @param database {FCDatabase}
-   */
-  // eslint-disable-next-line no-useless-constructor
-  constructor(database) {
-    super(database)
-  }
+export class SQLRemover extends SQLBuilderBase {
 
   /**
    * @returns {Promise<void>}
@@ -21,5 +14,3 @@ class SQLRemover extends SQLBuilderBase {
     await this.database.update(query, this.stmtValues())
   }
 }
-
-module.exports = SQLRemover
