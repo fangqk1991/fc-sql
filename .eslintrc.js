@@ -41,7 +41,6 @@ module.exports = {
     'no-useless-escape': 'off',
     '@typescript-eslint/indent': 'off',
     '@typescript-eslint/explicit-member-accessibility': 'off',
-    '@typescript-eslint/semi': ["error", "never"],
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off'
   }
 }
