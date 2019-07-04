@@ -1,4 +1,4 @@
-import { DBProtocol } from './DBProtocol'
+import {DBProtocol} from './DBProtocol'
 import * as assert from 'assert'
 
 export class DBTools {

@@ -1,8 +1,8 @@
-import { QueryTypes, Sequelize } from 'sequelize'
-import { SQLSearcher } from "./SQLSearcher"
-import { SQLAdder } from "./SQLAdder"
-import { SQLModifier } from './SQLModifier'
-import { SQLRemover } from "./SQLRemover"
+import {QueryTypes, Sequelize} from 'sequelize'
+import {SQLSearcher} from "./SQLSearcher"
+import {SQLAdder} from "./SQLAdder"
+import {SQLModifier} from './SQLModifier'
+import {SQLRemover} from "./SQLRemover"
 
 const _instanceMap: {[key: string]: FCDatabase} = {}
 

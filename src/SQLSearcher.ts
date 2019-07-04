@@ -1,4 +1,4 @@
-import { SQLBuilderBase } from './SQLBuilderBase'
+import {SQLBuilderBase} from './SQLBuilderBase'
 import * as assert from 'assert'
 
 export class SQLSearcher extends SQLBuilderBase {

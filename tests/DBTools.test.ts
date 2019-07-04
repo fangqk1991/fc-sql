@@ -1,4 +1,4 @@
-import { FCDatabase, SQLSearcher, DBTools, DBProtocol } from '../src'
+import {FCDatabase, SQLSearcher, DBTools, DBProtocol} from '../src'
 import * as assert from 'assert'
 
 const database = FCDatabase.getInstance()
