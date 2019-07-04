@@ -17,12 +17,15 @@ class MyProtocol implements DBProtocol {
   database(): FCDatabase {
     return database
   }
+
   table(): string {
     return 'demo_table'
   }
+
   primaryKey(): string {
     return 'uid'
   }
+
   cols(): string[] {
     return [
       'uid',
@@ -30,9 +33,11 @@ class MyProtocol implements DBProtocol {
       'key2',
     ]
   }
+
   insertableCols(): string[] {
     return this.cols()
   }
+
   modifiableCols(): string[] {
     return [
       'key1',
@@ -65,14 +70,14 @@ describe('Test DBTools', (): void => {
     const watchUID = items[0]['uid'] as string
     const feed = await tools.searchSingle({
       uid: watchUID
-    }) as {uid: string; key1: string; key2: string}
+    }) as { uid: string; key1: string; key2: string }
     await tools.update({
       uid: watchUID,
       key1: 'K1 - New',
     })
     const feed2 = await tools.searchSingle({
       uid: watchUID
-    }) as {uid: string; key1: string; key2: string}
+    }) as { uid: string; key1: string; key2: string }
     assert.ok(feed.uid === feed2.uid)
     assert.ok(feed.key2 === feed2.key2)
     assert.ok(feed2.key1 === 'K1 - New')

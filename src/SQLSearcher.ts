@@ -75,7 +75,7 @@ export class SQLSearcher extends SQLBuilderBase {
     if (conditions.length) {
       query = `${query} WHERE ${this.buildConditionStr()}`
     }
-    return { query: query, stmtValues: this.stmtValues() }
+    return {query: query, stmtValues: this.stmtValues()}
   }
 
   async queryList(): Promise<{}[]> {
@@ -99,7 +99,7 @@ export class SQLSearcher extends SQLBuilderBase {
     return this.database.query(query, stmtValues)
   }
 
-  async querySingle(): Promise<{}|null> {
+  async querySingle(): Promise<{} | null> {
     const items = await this.queryList()
     if (items.length > 0) {
       return items[0]

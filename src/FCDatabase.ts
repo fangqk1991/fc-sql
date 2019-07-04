@@ -4,7 +4,7 @@ import {SQLAdder} from "./SQLAdder"
 import {SQLModifier} from './SQLModifier'
 import {SQLRemover} from "./SQLRemover"
 
-const _instanceMap: {[key: string]: FCDatabase} = {}
+const _instanceMap: { [key: string]: FCDatabase } = {}
 
 export class FCDatabase {
   __theDatabase?: Sequelize
@@ -30,7 +30,7 @@ export class FCDatabase {
     this._options = options
   }
 
-  async query(query: string, replacements: (string | number | null)[] = []): Promise<{[key: string]: any}[]> {
+  async query(query: string, replacements: (string | number | null)[] = []): Promise<{ [key: string]: any }[]> {
     return this._db().query(query, {
       replacements: replacements,
       type: QueryTypes.SELECT

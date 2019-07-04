@@ -15,7 +15,7 @@ export class SQLBuilderBase {
     this.table = table
   }
 
-  checkPrimaryKey(params: {[key: string]: (string | number)}, key: string): void {
+  checkPrimaryKey(params: { [key: string]: (string | number) }, key: string): void {
     assert.ok(key in params, `${this.constructor.name}: primary key missing.`)
     this.addConditionKV(key, params[key])
   }
