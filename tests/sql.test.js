@@ -143,5 +143,14 @@ describe('Test SQL', () => {
       assert.ok(Array.isArray(items))
       assert.ok(items.length === count)
     }
+    {
+      const searcher = new SQLSearcher(database)
+      searcher.setTable('demo_table')
+      searcher.setColumns(['*'])
+      const count = await searcher.queryCount()
+      const items = await searcher.queryList()
+      assert.ok(Array.isArray(items))
+      assert.ok(items.length === count)
+    }
   })
 })
