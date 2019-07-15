@@ -59,7 +59,7 @@ export class SQLSearcher extends SQLBuilderBase {
       const [keyStr, ...others]: string[] = column.trim().split(' ')
       const formattedKeyStr = keyStr.split('.').map((item: string): string => {
         const chars = item.replace(new RegExp('`', 'g'), '')
-        return /^[a-z0-9]$/.test(chars) ? `\`${chars}\`` : chars
+        return /^[a-zA-Z0-9]+$/.test(chars) ? `\`${chars}\`` : chars
       }).join('.')
       if (others.length > 0) {
         const key = others.pop() as string
@@ -73,7 +73,7 @@ export class SQLSearcher extends SQLBuilderBase {
     this.checkTableValid()
     this.checkColumnsValid()
 
-    let query = `SELECT ${this._distinct ? 'DISTINCT' : ''} ${this._columnsDesc()} FROM ${this.table}`;
+    let query = `SELECT ${this._distinct ? 'DISTINCT' : ''} ${this._columnsDesc()} FROM ${this.table}`
     const conditions = this.conditions()
     if (conditions.length) {
       query = `${query} WHERE ${this.buildConditionStr()}`
