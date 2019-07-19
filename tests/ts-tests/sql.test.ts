@@ -1,5 +1,6 @@
 import { FCDatabase, SQLAdder, SQLModifier, SQLRemover, SQLSearcher } from "../../src"
 import * as assert from "assert"
+import moment = require("moment")
 
 const database = FCDatabase.getInstance()
 database.init({
@@ -9,7 +10,7 @@ database.init({
   database: 'demo_db',
   username: 'root',
   password: '',
-  timezone: '+08:00',
+  timezone: '+00:00'
   // logging: false,
 })
 
@@ -135,7 +136,7 @@ describe('Test SQL', () => {
         'demo_table.uid AS uid',
         'demo_table.key1 AS key1',
         'demo_table.key2 AS key2',
-        'CONCAT(demo_table.key1, demo_table.key2) AS full_name',
+        'CONCAT(demo_table.key1, demo_table.key2) AS full_name'
       ])
       const count = await searcher.queryCount()
       const items = await searcher.queryList()
@@ -158,6 +159,7 @@ describe('Test Timezone', (): void => {
   it(`Test Timezone`, async (): Promise<void> => {
     const timezones = ['+00:00', '+08:00']
     for (const timezone of timezones) {
+      console.log(`Timezone: ${timezone}`)
       const database = new FCDatabase()
       database.init({
         host: '127.0.0.1',
@@ -167,14 +169,50 @@ describe('Test Timezone', (): void => {
         username: 'root',
         password: '',
         timezone: timezone,
+        dialectOptions: {
+          dateStrings: true
+        }
       })
       assert.ok((await database.timezone()) === timezone)
-
-      const searcher = new SQLSearcher(database)
-      searcher.setTable('demo_table')
-      searcher.setColumns(['*'])
-      const result = await searcher.querySingle()
-      console.log(result)
     }
+  })
+
+  it(`Test Exact Timezone `, async (): Promise<void> => {
+    const database = new FCDatabase()
+    database.init({
+      host: '127.0.0.1',
+      port: '3306',
+      dialect: 'mysql',
+      database: 'demo_db',
+      username: 'root',
+      password: '',
+      timezone: '+00:00',
+      dialectOptions: {
+        dateStrings: true
+      }
+    })
+
+    const createTs = moment().unix()
+    const curTime = moment(createTs * 1000).utc().format('YYYY-MM-DD HH:mm:ss')
+    const key1 = `K1 - ${Math.random()}`
+    const key2 = `K2 - ${Math.random()}`
+
+    const adder = new SQLAdder(database)
+    adder.setTable('demo_table')
+    adder.insertKV('key1', key1)
+    adder.insertKV('key2', key2)
+    adder.insertKV('create_ts', curTime)
+    await adder.execute()
+
+    const searcher = new SQLSearcher(database)
+    searcher.setTable('demo_table')
+    searcher.setColumns(['*'])
+    searcher.addConditionKV('key1', key1)
+    searcher.addConditionKV('key2', key2)
+    const result = (await searcher.querySingle()) as any
+    assert.ok(result['create_ts'] === curTime)
+
+    const createTs2 = moment.utc(curTime).unix()
+    assert.ok(createTs === createTs2)
   })
 })
