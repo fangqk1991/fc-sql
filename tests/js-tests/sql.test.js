@@ -1,5 +1,5 @@
 /* eslint-disable */
-const { FCDatabase, SQLAdder, SQLModifier, SQLRemover, SQLSearcher } = require('../lib')
+const { FCDatabase, SQLAdder, SQLModifier, SQLRemover, SQLSearcher } = require('../../lib/index')
 const assert = require('assert')
 
 const database = FCDatabase.getInstance()

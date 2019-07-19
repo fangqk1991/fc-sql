@@ -1,4 +1,4 @@
-import {FCDatabase, SQLSearcher, DBTools, DBProtocol} from '../src'
+import {FCDatabase, SQLSearcher, DBTools, DBProtocol} from '../../src'
 import * as assert from 'assert'
 
 const database = FCDatabase.getInstance()
@@ -31,6 +31,8 @@ class MyProtocol implements DBProtocol {
       'uid',
       'key1',
       'key2',
+      'create_time',
+      'create_ts',
     ]
   }
 

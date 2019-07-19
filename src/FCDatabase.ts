@@ -33,7 +33,8 @@ export class FCDatabase {
   async query(query: string, replacements: (string | number | null)[] = []): Promise<{ [key: string]: any }[]> {
     return this._db().query(query, {
       replacements: replacements,
-      type: QueryTypes.SELECT
+      type: QueryTypes.SELECT,
+      raw: true,
     })
   }
 
@@ -64,5 +65,10 @@ export class FCDatabase {
 
   remover(): SQLRemover {
     return new SQLRemover(this)
+  }
+
+  async timezone() {
+    const result = await this.query(`SHOW VARIABLES LIKE "time_zone"`)
+    return result[0]['Value']
   }
 }
