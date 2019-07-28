@@ -59,7 +59,7 @@ export class SQLSearcher extends SQLBuilderBase {
       const [keyStr, ...others]: string[] = column.trim().split(' ')
       const formattedKeyStr = keyStr.split('.').map((item: string): string => {
         const chars = item.replace(new RegExp('`', 'g'), '')
-        return /^[a-zA-Z0-9]+$/.test(chars) ? `\`${chars}\`` : chars
+        return /^[a-zA-Z0-9_]+$/.test(chars) ? `\`${chars}\`` : chars
       }).join('.')
       if (others.length > 0) {
         const key = others.pop() as string
