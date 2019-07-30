@@ -147,6 +147,7 @@ describe('Test SQL', () => {
       const searcher = new SQLSearcher(database)
       searcher.setTable('demo_table')
       searcher.setColumns(['*'])
+      searcher.addOrderRule('IF(uid > ?, 1000, 0)', 'DESC', 16)
       const count = await searcher.queryCount()
       const items = await searcher.queryList()
       assert.ok(Array.isArray(items))

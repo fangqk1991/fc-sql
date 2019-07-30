@@ -8,20 +8,21 @@ export class SQLSearcher extends SQLBuilderBase {
   _length: number = 1
   _optionStr: string = ''
   _orderRules: { sortKey: string; sortDirection: string }[] = []
+  _orderStmts: (string|number)[] = []
 
-  markDistinct(): void {
+  public markDistinct(): void {
     this._distinct = true
   }
 
-  setColumns(columns: string[]): void {
+  public setColumns(columns: string[]) {
     this._queryColumns = columns
   }
 
-  addColumn(column: string): void {
+  public addColumn(column: string): void {
     this._queryColumns.push(column)
   }
 
-  addOrderRule(sortKey: string, direction: string = 'ASC'): void {
+  public addOrderRule(sortKey: string, direction: string = 'ASC', ...args: (string|number)[]) {
     if (direction.toUpperCase() === 'DESC') {
       direction = 'DESC'
     } else {
@@ -31,27 +32,28 @@ export class SQLSearcher extends SQLBuilderBase {
       sortKey: sortKey,
       sortDirection: direction
     })
+    this._orderStmts.push(...args)
   }
 
-  setPageInfo(page: number, lengthPerPage: number): void {
+  public setPageInfo(page: number, lengthPerPage: number): void {
     this._length = lengthPerPage
     this._offset = page * this._length
   }
 
-  setLimitInfo(offset: number, length: number): void {
+  public setLimitInfo(offset: number, length: number): void {
     this._offset = offset
     this._length = length
   }
 
-  setOptionStr(optionStr: string): void {
+  public setOptionStr(optionStr: string): void {
     this._optionStr = optionStr
   }
 
-  checkColumnsValid(): void {
+  public checkColumnsValid(): void {
     assert.ok(this._queryColumns.length > 0, `${this.constructor.name}: _queryColumns missing.`)
   }
 
-  _columnsDesc(): string {
+  private _columnsDesc(): string {
     return this._queryColumns.map((column: string): string => {
       if (/[\(\)]/.test(column)) {
         return column
@@ -69,7 +71,7 @@ export class SQLSearcher extends SQLBuilderBase {
     }).join(', ')
   }
 
-  exportSQL(): { query: string; stmtValues: (string | number | null)[] } {
+  public exportSQL() {
     this.checkTableValid()
     this.checkColumnsValid()
 
@@ -78,10 +80,10 @@ export class SQLSearcher extends SQLBuilderBase {
     if (conditions.length) {
       query = `${query} WHERE ${this.buildConditionStr()}`
     }
-    return {query: query, stmtValues: this.stmtValues()}
+    return {query: query, stmtValues: [...this.stmtValues()]}
   }
 
-  async queryList(): Promise<{}[]> {
+  public async queryList() {
     const data = this.exportSQL()
     let query = data.query
     const stmtValues = data.stmtValues
@@ -94,6 +96,9 @@ export class SQLSearcher extends SQLBuilderBase {
       const orderItems = this._orderRules.map((rule): string => `${rule.sortKey} ${rule.sortDirection}`)
       query = `${query} ORDER BY ${orderItems.join(', ')}`
     }
+    if (this._orderStmts.length) {
+      stmtValues.push(...this._orderStmts)
+    }
 
     if (this._offset >= 0 && this._length > 0) {
       query = `${query} LIMIT ${this._offset}, ${this._length}`
@@ -102,7 +107,7 @@ export class SQLSearcher extends SQLBuilderBase {
     return this.database.query(query, stmtValues)
   }
 
-  async querySingle(): Promise<{} | null> {
+  public async querySingle() {
     const items = await this.queryList()
     if (items.length > 0) {
       return items[0]
@@ -110,7 +115,7 @@ export class SQLSearcher extends SQLBuilderBase {
     return null
   }
 
-  async queryCount(): Promise<number> {
+  public async queryCount() {
     this.checkTableValid()
 
     let query
