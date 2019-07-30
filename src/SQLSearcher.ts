@@ -1,4 +1,4 @@
-import {SQLBuilderBase} from './SQLBuilderBase'
+import { SQLBuilderBase } from './SQLBuilderBase'
 import * as assert from 'assert'
 
 export class SQLSearcher extends SQLBuilderBase {
@@ -8,21 +8,21 @@ export class SQLSearcher extends SQLBuilderBase {
   _length: number = 1
   _optionStr: string = ''
   _orderRules: { sortKey: string; sortDirection: string }[] = []
-  _orderStmts: (string|number)[] = []
+  _orderStmts: (string | number)[] = []
 
-  public markDistinct(): void {
+  markDistinct(): void {
     this._distinct = true
   }
 
-  public setColumns(columns: string[]) {
+  setColumns(columns: string[]) {
     this._queryColumns = columns
   }
 
-  public addColumn(column: string): void {
+  addColumn(column: string): void {
     this._queryColumns.push(column)
   }
 
-  public addOrderRule(sortKey: string, direction: string = 'ASC', ...args: (string|number)[]) {
+  addOrderRule(sortKey: string, direction: string = 'ASC', ...args: (string | number)[]) {
     if (direction.toUpperCase() === 'DESC') {
       direction = 'DESC'
     } else {
@@ -35,25 +35,25 @@ export class SQLSearcher extends SQLBuilderBase {
     this._orderStmts.push(...args)
   }
 
-  public setPageInfo(page: number, lengthPerPage: number): void {
+  setPageInfo(page: number, lengthPerPage: number): void {
     this._length = lengthPerPage
     this._offset = page * this._length
   }
 
-  public setLimitInfo(offset: number, length: number): void {
+  setLimitInfo(offset: number, length: number): void {
     this._offset = offset
     this._length = length
   }
 
-  public setOptionStr(optionStr: string): void {
+  setOptionStr(optionStr: string): void {
     this._optionStr = optionStr
   }
 
-  public checkColumnsValid(): void {
+  checkColumnsValid(): void {
     assert.ok(this._queryColumns.length > 0, `${this.constructor.name}: _queryColumns missing.`)
   }
 
-  private _columnsDesc(): string {
+  _columnsDesc(): string {
     return this._queryColumns.map((column: string): string => {
       if (/[\(\)]/.test(column)) {
         return column
@@ -71,7 +71,7 @@ export class SQLSearcher extends SQLBuilderBase {
     }).join(', ')
   }
 
-  public exportSQL() {
+  exportSQL() {
     this.checkTableValid()
     this.checkColumnsValid()
 
@@ -83,7 +83,7 @@ export class SQLSearcher extends SQLBuilderBase {
     return {query: query, stmtValues: [...this.stmtValues()]}
   }
 
-  public async queryList() {
+  async queryList() {
     const data = this.exportSQL()
     let query = data.query
     const stmtValues = data.stmtValues
@@ -107,7 +107,7 @@ export class SQLSearcher extends SQLBuilderBase {
     return this.database.query(query, stmtValues)
   }
 
-  public async querySingle() {
+  async querySingle() {
     const items = await this.queryList()
     if (items.length > 0) {
       return items[0]
@@ -115,7 +115,7 @@ export class SQLSearcher extends SQLBuilderBase {
     return null
   }
 
-  public async queryCount() {
+  async queryCount() {
     this.checkTableValid()
 
     let query

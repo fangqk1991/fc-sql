@@ -1,8 +1,8 @@
-import {QueryTypes, Sequelize} from 'sequelize'
-import {SQLSearcher} from "./SQLSearcher"
-import {SQLAdder} from "./SQLAdder"
-import {SQLModifier} from './SQLModifier'
-import {SQLRemover} from "./SQLRemover"
+import { QueryTypes, Sequelize } from 'sequelize'
+import { SQLSearcher } from "./SQLSearcher"
+import { SQLAdder } from "./SQLAdder"
+import { SQLModifier } from './SQLModifier'
+import { SQLRemover } from "./SQLRemover"
 
 const _instanceMap: { [key: string]: FCDatabase } = {}
 
@@ -34,13 +34,13 @@ export class FCDatabase {
     return this._db().query(query, {
       replacements: replacements,
       type: QueryTypes.SELECT,
-      raw: true,
+      raw: true
     })
   }
 
   async update(query: string, replacements: (string | number | null)[] = []): Promise<any> {
     return this._db().query(query, {
-      replacements: replacements,
+      replacements: replacements
     })
   }
 
