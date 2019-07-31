@@ -211,7 +211,9 @@ describe('Test Timezone', (): void => {
     searcher.addConditionKV('key1', key1)
     searcher.addConditionKV('key2', key2)
     const result = (await searcher.querySingle()) as any
-    assert.ok(result['create_ts'], curTime)
+
+    // TODO: ?? Function Test Pass, Global Test Fail
+    assert.ok(result['create_ts'] === curTime)
 
     const createTs2 = moment.utc(curTime).unix()
     assert.ok(createTs === createTs2)
