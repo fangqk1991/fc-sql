@@ -1,6 +1,9 @@
 import {SQLBuilderBase} from './SQLBuilderBase'
 import * as assert from 'assert'
 
+/**
+ * @description Use for delete-sql
+ */
 export class SQLRemover extends SQLBuilderBase {
   async execute(): Promise<void> {
     this.checkTableValid()

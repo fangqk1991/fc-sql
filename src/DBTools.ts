@@ -1,6 +1,9 @@
 import {DBProtocol} from './DBProtocol'
 import * as assert from 'assert'
 
+/**
+ * @description When a DBProtocol is defined, you can use DBTools for quick add/update/delete/search
+ */
 export class DBTools {
   _protocol: DBProtocol
 

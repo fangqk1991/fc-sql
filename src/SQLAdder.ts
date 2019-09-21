@@ -1,10 +1,18 @@
 import {SQLBuilderBase} from './SQLBuilderBase'
 import * as assert from 'assert'
 
+/**
+ * @description Use for insert-sql
+ */
 export class SQLAdder extends SQLBuilderBase {
   _insertKeys: string[] = []
   _insertValues: (string | number | null)[] = []
 
+  /**
+   * @description Pass the column you want to insert, and the new value.
+   * @param key {string}
+   * @param value {string | number | null}
+   */
   insertKV(key: string, value: (string | number | null)): void {
     this._insertKeys.push(key)
     this._insertValues.push(value)

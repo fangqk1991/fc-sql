@@ -1,28 +1,48 @@
 import { SQLBuilderBase } from './SQLBuilderBase'
 import * as assert from 'assert'
 
+export type OrderDirection = 'ASC' | 'DESC'
+
+/**
+ * @description Use for select-sql
+ */
 export class SQLSearcher extends SQLBuilderBase {
   _queryColumns: string[] = []
   _distinct: boolean = false
   _offset: number = -1
   _length: number = 1
   _optionStr: string = ''
-  _orderRules: { sortKey: string; sortDirection: string }[] = []
+  _orderRules: { sortKey: string; sortDirection: OrderDirection }[] = []
   _orderStmts: (string | number)[] = []
 
-  markDistinct(): void {
+  /**
+   * @description As 'DISTINCT' in select-sql
+   */
+  public markDistinct(): void {
     this._distinct = true
   }
 
+  /**
+   * @description Set the columns you want to get
+   */
   setColumns(columns: string[]) {
     this._queryColumns = columns
   }
 
+  /**
+   * @description Add the column you want to get
+   */
   addColumn(column: string): void {
     this._queryColumns.push(column)
   }
 
-  addOrderRule(sortKey: string, direction: string = 'ASC', ...args: (string | number)[]) {
+  /**
+   * @description Add order rule for the result
+   * @param sortKey {string}
+   * @param direction {string}
+   * @param args
+   */
+  addOrderRule(sortKey: string, direction: OrderDirection = 'ASC', ...args: (string | number)[]) {
     if (direction.toUpperCase() === 'DESC') {
       direction = 'DESC'
     } else {
@@ -35,16 +55,30 @@ export class SQLSearcher extends SQLBuilderBase {
     this._orderStmts.push(...args)
   }
 
+  /**
+   * @description Pass page index and lengthPerPage to build limit info, page's first index is 0
+   * @param page {number}
+   * @param lengthPerPage {number}
+   */
   setPageInfo(page: number, lengthPerPage: number): void {
     this._length = lengthPerPage
     this._offset = page * this._length
   }
 
+  /**
+   * @description Set limit info, pass offset and length
+   * @param offset {string}
+   * @param length {string}
+   */
   setLimitInfo(offset: number, length: number): void {
     this._offset = offset
     this._length = length
   }
 
+  /**
+   * @description Set option statement, such as 'GROUP BY ...'
+   * @param optionStr
+   */
   setOptionStr(optionStr: string): void {
     this._optionStr = optionStr
   }
@@ -83,6 +117,9 @@ export class SQLSearcher extends SQLBuilderBase {
     return {query: query, stmtValues: [...this.stmtValues()]}
   }
 
+  /**
+   * @description Execute it after preparing table, columns, conditions, get the record-list.
+   */
   async queryList() {
     const data = this.exportSQL()
     let query = data.query
@@ -104,9 +141,12 @@ export class SQLSearcher extends SQLBuilderBase {
       query = `${query} LIMIT ${this._offset}, ${this._length}`
     }
 
-    return this.database.query(query, stmtValues)
+    return (await this.database.query(query, stmtValues)) as { [p: string]: any }[]
   }
 
+  /**
+   * @description Got the first element of the return of 'queryList()', if list is empty, 'querySingle()' will return null.
+   */
   async querySingle() {
     const items = await this.queryList()
     if (items.length > 0) {
@@ -115,6 +155,9 @@ export class SQLSearcher extends SQLBuilderBase {
     return null
   }
 
+  /**
+   * @description Execute it after preparing table, columns, conditions, get the record-count.
+   */
   async queryCount() {
     this.checkTableValid()
 
