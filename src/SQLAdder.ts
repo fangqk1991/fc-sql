@@ -30,7 +30,7 @@ export class SQLAdder extends SQLBuilderBase {
     const keys2 = []
     const values2 = []
     for (let i = 0; i < values.length; ++i) {
-      if (values[i] !== null) {
+      if (values[i] !== null && values[i] !== undefined) {
         keys2.push(keys[i])
         values2.push(values[i])
       }
