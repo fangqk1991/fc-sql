@@ -4,7 +4,7 @@ import * as assert from 'assert'
 const database = FCDatabase.getInstance()
 database.init({
   host: '127.0.0.1',
-  port: '3306',
+  port: 3306,
   dialect: 'mysql',
   database: 'demo_db',
   username: 'root',

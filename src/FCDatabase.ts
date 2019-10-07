@@ -3,12 +3,13 @@ import { SQLSearcher } from "./SQLSearcher"
 import { SQLAdder } from "./SQLAdder"
 import { SQLModifier } from './SQLModifier'
 import { SQLRemover } from "./SQLRemover"
+import { Options } from 'sequelize'
 
 const _instanceMap: { [key: string]: FCDatabase } = {}
 
 export class FCDatabase {
   __theDatabase?: Sequelize
-  _options?: {}
+  _options!: Options
 
   static instanceWithName(name: string): FCDatabase {
     let obj = null
@@ -26,7 +27,7 @@ export class FCDatabase {
     return FCDatabase.instanceWithName('default')
   }
 
-  init(options: {}): void {
+  init(options: Options): void {
     this._options = options
   }
 
