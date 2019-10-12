@@ -13,12 +13,13 @@ export class SQLAdder extends SQLBuilderBase {
    * @param key {string}
    * @param value {string | number | null}
    */
-  insertKV(key: string, value: (string | number | null)): void {
+  public insertKV(key: string, value: (string | number | null)) {
     this._insertKeys.push(key)
     this._insertValues.push(value)
+    return this
   }
 
-  async execute(): Promise<void> {
+  public async execute(): Promise<void> {
     this.checkTableValid()
 
     const keys = this._insertKeys
@@ -40,7 +41,7 @@ export class SQLAdder extends SQLBuilderBase {
     await this.database.update(query, values2)
   }
 
-  stmtValues(): (string | number | null)[] {
+  public stmtValues(): (string | number | null)[] {
     return this._insertValues
   }
 }

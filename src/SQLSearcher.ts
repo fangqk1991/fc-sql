@@ -18,22 +18,25 @@ export class SQLSearcher extends SQLBuilderBase {
   /**
    * @description As 'DISTINCT' in select-sql
    */
-  public markDistinct(): void {
+  public markDistinct() {
     this._distinct = true
+    return this
   }
 
   /**
    * @description Set the columns you want to get
    */
-  setColumns(columns: string[]) {
+  public setColumns(columns: string[]) {
     this._queryColumns = columns
+    return this
   }
 
   /**
    * @description Add the column you want to get
    */
-  addColumn(column: string): void {
+  public addColumn(column: string) {
     this._queryColumns.push(column)
+    return this
   }
 
   /**
@@ -42,7 +45,7 @@ export class SQLSearcher extends SQLBuilderBase {
    * @param direction {string}
    * @param args
    */
-  addOrderRule(sortKey: string, direction: OrderDirection = 'ASC', ...args: (string | number)[]) {
+  public addOrderRule(sortKey: string, direction: OrderDirection = 'ASC', ...args: (string | number)[]) {
     if (direction.toUpperCase() === 'DESC') {
       direction = 'DESC'
     } else {
@@ -53,6 +56,7 @@ export class SQLSearcher extends SQLBuilderBase {
       sortDirection: direction
     })
     this._orderStmts.push(...args)
+    return this
   }
 
   /**
@@ -60,9 +64,10 @@ export class SQLSearcher extends SQLBuilderBase {
    * @param page {number}
    * @param lengthPerPage {number}
    */
-  setPageInfo(page: number, lengthPerPage: number): void {
+  public setPageInfo(page: number, lengthPerPage: number) {
     this._length = lengthPerPage
     this._offset = page * this._length
+    return this
   }
 
   /**
@@ -70,21 +75,24 @@ export class SQLSearcher extends SQLBuilderBase {
    * @param offset {string}
    * @param length {string}
    */
-  setLimitInfo(offset: number, length: number): void {
+  public setLimitInfo(offset: number, length: number) {
     this._offset = offset
     this._length = length
+    return this
   }
 
   /**
    * @description Set option statement, such as 'GROUP BY ...'
    * @param optionStr
    */
-  setOptionStr(optionStr: string): void {
+  public setOptionStr(optionStr: string) {
     this._optionStr = optionStr
+    return this
   }
 
-  checkColumnsValid(): void {
+  public checkColumnsValid() {
     assert.ok(this._queryColumns.length > 0, `${this.constructor.name}: _queryColumns missing.`)
+    return this
   }
 
   _columnsDesc(): string {
@@ -105,7 +113,7 @@ export class SQLSearcher extends SQLBuilderBase {
     }).join(', ')
   }
 
-  exportSQL() {
+  public exportSQL() {
     this.checkTableValid()
     this.checkColumnsValid()
 
@@ -120,7 +128,7 @@ export class SQLSearcher extends SQLBuilderBase {
   /**
    * @description Execute it after preparing table, columns, conditions, get the record-list.
    */
-  async queryList() {
+  public async queryList() {
     const data = this.exportSQL()
     let query = data.query
     const stmtValues = data.stmtValues
@@ -147,7 +155,7 @@ export class SQLSearcher extends SQLBuilderBase {
   /**
    * @description Got the first element of the return of 'queryList()', if list is empty, 'querySingle()' will return null.
    */
-  async querySingle() {
+  public async querySingle() {
     const items = await this.queryList()
     if (items.length > 0) {
       return items[0]
@@ -158,7 +166,7 @@ export class SQLSearcher extends SQLBuilderBase {
   /**
    * @description Execute it after preparing table, columns, conditions, get the record-count.
    */
-  async queryCount() {
+  public async queryCount() {
     this.checkTableValid()
 
     let query
