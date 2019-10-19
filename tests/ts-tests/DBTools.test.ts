@@ -59,10 +59,19 @@ describe('Test DBTools', (): void => {
 
     const count = 5
     for (let i = 0; i < count; ++i) {
-      await tools.add({
+      const data = {
+        uid: 0,
         key1: `K1 - ${Math.random()}`,
         key2: `K2 - ${Math.random()}`,
+      }
+      data.uid = await tools.add({
+        key1: data.key1,
+        key2: data.key2,
       })
+      const newData = (await tools.searchSingle({ uid: data.uid })) as any
+      assert.equal(data.uid, newData.uid)
+      assert.equal(data.key1, newData.key1)
+      assert.equal(data.key2, newData.key2)
     }
 
     const countAfter = await tools.fetchCount({})

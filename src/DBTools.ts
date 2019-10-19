@@ -11,7 +11,7 @@ export class DBTools {
     this._protocol = protocol
   }
 
-  async add(params: { [key: string]: (number | string) }): Promise<void> {
+  async add(params: { [key: string]: (number | string) }): Promise<number> {
     const protocol = this._protocol
     const database = protocol.database()
     const table = protocol.table()
@@ -23,7 +23,7 @@ export class DBTools {
       const value = (col in params) ? params[col] : null
       builder.insertKV(col, value)
     })
-    await builder.execute()
+    return builder.execute()
   }
 
   async update(params: { [key: string]: (number | string) }): Promise<void> {
