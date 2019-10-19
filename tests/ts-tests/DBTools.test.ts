@@ -32,7 +32,7 @@ class MyProtocol implements DBProtocol {
       'key1',
       'key2',
       'create_time',
-      'create_ts',
+      'update_time',
     ]
   }
 

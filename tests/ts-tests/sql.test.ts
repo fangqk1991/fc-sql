@@ -67,11 +67,22 @@ describe('Test SQL', () => {
 
     const count = 5
     for (let i = 0; i < count; ++i) {
+      const data = {
+        uid: 0,
+        key1: `K1 - ${Math.random()}`,
+        key2: `K2 - ${Math.random()}`,
+      }
       const adder = new SQLAdder(database)
       adder.setTable('demo_table')
-      adder.insertKV('key1', `K1 - ${Math.random()}`)
-      adder.insertKV('key2', `K2 - ${Math.random()}`)
-      await adder.execute()
+      adder.insertKV('key1', data.key1)
+      adder.insertKV('key2', data.key2)
+      data.uid = await adder.execute()
+      const feeds = await database.query('SELECT * FROM demo_table WHERE uid = ?', [data.uid])
+      assert.ok(feeds.length === 1)
+      const newData = feeds[0] as any
+      assert.equal(data.uid, newData.uid)
+      assert.equal(data.key1, newData.key1)
+      assert.equal(data.key2, newData.key2)
     }
 
     const countAfter = await globalSearcher.queryCount()
@@ -176,47 +187,6 @@ describe('Test Timezone', (): void => {
       })
       assert.ok((await database.timezone()) === timezone)
     }
-  })
-
-  it(`Test Exact Timezone `, async (): Promise<void> => {
-    const database = new FCDatabase()
-    database.init({
-      host: '127.0.0.1',
-      port: 3306,
-      dialect: 'mysql',
-      database: 'demo_db',
-      username: 'root',
-      password: '',
-      timezone: '+00:00',
-      dialectOptions: {
-        dateStrings: true
-      }
-    })
-
-    const createTs = moment().unix()
-    const curTime = moment(createTs * 1000).utc().format('YYYY-MM-DD HH:mm:ss')
-    const key1 = `K1 - ${Math.random()}`
-    const key2 = `K2 - ${Math.random()}`
-
-    const adder = new SQLAdder(database)
-    adder.setTable('demo_table')
-    adder.insertKV('key1', key1)
-    adder.insertKV('key2', key2)
-    adder.insertKV('create_ts', curTime)
-    await adder.execute()
-
-    const searcher = new SQLSearcher(database)
-    searcher.setTable('demo_table')
-    searcher.setColumns(['*'])
-    searcher.addConditionKV('key1', key1)
-    searcher.addConditionKV('key2', key2)
-    const result = (await searcher.querySingle()) as any
-
-    // TODO: ?? Function Test Pass, Global Test Fail
-    // assert.ok(result['create_ts'] === curTime)
-
-    const createTs2 = moment.utc(curTime).unix()
-    assert.ok(createTs === createTs2)
   })
 
   it(`Test SQLTransaction`, async () => {

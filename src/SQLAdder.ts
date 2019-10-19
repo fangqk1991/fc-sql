@@ -19,7 +19,7 @@ export class SQLAdder extends SQLBuilderBase {
     return this
   }
 
-  public async execute(): Promise<void> {
+  public async execute(): Promise<number> {
     this.checkTableValid()
 
     const keys = this._insertKeys
@@ -39,6 +39,8 @@ export class SQLAdder extends SQLBuilderBase {
 
     const query = `INSERT INTO ${this.table}(${keys2.join(', ')}) VALUES (${Array(values2.length).fill('?').join(', ')})`
     await this.database.update(query, values2)
+    const data = (await this.database.query('SELECT LAST_INSERT_ID() AS lastInsertId')) as any
+    return data[0]['lastInsertId'] as number
   }
 
   public stmtValues(): (string | number | null)[] {
