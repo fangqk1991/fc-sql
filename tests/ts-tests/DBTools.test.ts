@@ -31,6 +31,8 @@ class MyProtocol implements DBProtocol {
       'uid',
       'key1',
       'key2',
+      'some_date',
+      'some_datetime',
       'create_time',
       'update_time',
     ]
