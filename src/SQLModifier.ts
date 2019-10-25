@@ -25,7 +25,9 @@ export class SQLModifier extends SQLBuilderBase {
 
   public async execute() {
     this.checkTableValid()
-    assert.ok(this._updateColumns.length > 0, `${this.constructor.name}: updateColumns missing.`)
+    if (this._updateColumns.length === 0) {
+      return
+    }
     assert.ok(this.conditionColumns.length > 0, `${this.constructor.name}: conditionColumns missing.`)
 
     const query = `UPDATE ${this.table} SET ${this._updateColumns.join(', ')} WHERE (${this.conditions().join(' AND ')})`

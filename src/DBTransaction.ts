@@ -6,7 +6,7 @@ export interface TransactionProtocol {
   execute(): Promise<any>;
 }
 
-export type OperationCallback = (retData?: any) => Promise<void>
+export type OperationCallback = (retData?: any) => Promise<any>
 
 export interface TransactionOperation {
   performer: TransactionProtocol;
