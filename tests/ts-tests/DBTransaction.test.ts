@@ -43,17 +43,17 @@ describe('Test DBTransaction', () => {
       adder.setTable('demo_table_2')
       adder.insertKV('key1', `K1 - ${Math.random()}`)
       adder.insertKV('key2', `K2 - ${Math.random()}`)
-      await transaction.addOperation(adder, async () => {
+      transaction.addPerformer(adder, async () => {
         assert.fail()
       })
 
-      await transaction.addCustomFunc(async () => {
+      transaction.addCustomFunc(async () => {
         await buildSomeRecords(2)
         assert.equal(await globalSearcher.queryCount(), 2 * (i + 1))
       })
     }
     const errorMessage = 'Throw error deliberately.'
-    await transaction.addCustomFunc(async () => {
+    transaction.addCustomFunc(async () => {
       throw new Error(errorMessage)
     })
     try {
@@ -78,11 +78,11 @@ describe('Test DBTransaction', () => {
       adder.setTable('demo_table_2')
       adder.insertKV('key1', `K1 - ${Math.random()}`)
       adder.insertKV('key2', `K2 - ${Math.random()}`)
-      await transaction.addCustomFunc(async () => {
+      transaction.addCustomFunc(async () => {
         console.log(`Fake operation: Index - ${i}`)
       })
 
-      await transaction.addOperation(adder, async (uid: number) => {
+      transaction.addPerformer(adder, async (uid: number) => {
         console.log(`Transaction callback: [uid: ${uid}]`)
         assert.ok(uid > 0)
       })
@@ -90,7 +90,8 @@ describe('Test DBTransaction', () => {
       {
         const customer = SQLCustomer.searcher(database)
         customer.setEntity('SELECT COUNT(*) AS count FROM demo_table_2')
-        await transaction.addOperation(customer, async (items: any) => {
+
+        transaction.addPerformer(customer, async (items: any) => {
           assert.ok(Array.isArray(items))
           const count = items[0]['count']
           assert.equal(count, i + 1)
@@ -102,7 +103,7 @@ describe('Test DBTransaction', () => {
     {
       const customer = SQLCustomer.editor(database)
       customer.setEntity('UPDATE demo_table_2 SET key2 = ?', key2Desc)
-      await transaction.addOperation(customer)
+      transaction.addPerformer(customer)
     }
 
     const modifyUid = 1
@@ -114,13 +115,13 @@ describe('Test DBTransaction', () => {
       modifier.setTable('demo_table_2')
       modifier.updateKV('key1', modifyContent)
       modifier.addConditionKV('uid', modifyUid)
-      await transaction.addOperation(modifier)
+      transaction.addPerformer(modifier)
     }
     {
       const modifier = new SQLRemover(database)
       modifier.setTable('demo_table_2')
       modifier.addConditionKV('uid', deleteUid)
-      await transaction.addOperation(modifier)
+      transaction.addPerformer(modifier)
     }
 
     await transaction.commit()

@@ -1,9 +1,9 @@
 import { FCDatabase } from './FCDatabase'
 import * as assert from 'assert'
-import { TransactionOperation } from './DBTransaction'
+import { TransactionProtocol } from './DBTransaction'
 import { FCTransaction } from './FCTransaction'
 
-export abstract class SQLBuilderBase implements TransactionOperation {
+export abstract class SQLBuilderBase implements TransactionProtocol {
   database: FCDatabase
   conditionColumns: string[] = []
   conditionValues: (string | number)[] = []

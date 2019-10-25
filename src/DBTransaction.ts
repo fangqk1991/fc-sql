@@ -1,20 +1,20 @@
 import { FCDatabase } from './FCDatabase'
 import { FCTransaction } from './FCTransaction'
 
-export interface TransactionOperation {
+export interface TransactionProtocol {
   transaction: FCTransaction;
   execute(): Promise<any>;
 }
 
 export type OperationCallback = (retData?: any) => Promise<void>
 
-interface Operation {
-  entity: TransactionOperation;
+export interface TransactionOperation {
+  performer: TransactionProtocol;
   callback?: OperationCallback;
 }
 
 export class DBTransaction {
-  public readonly operations: Operation[]
+  public readonly operations: TransactionOperation[]
   private database: FCDatabase
   private _transactionInstance?: FCTransaction
 
@@ -27,17 +27,21 @@ export class DBTransaction {
     this._transactionInstance = await this.database._db().transaction()
   }
 
-  public async addOperation(operation: TransactionOperation, callback?: OperationCallback) {
-    this.operations.push({
-      entity: operation,
+  public addOperation(operation: TransactionOperation) {
+    this.operations.push(operation)
+  }
+
+  public addPerformer(performer: TransactionProtocol, callback?: OperationCallback) {
+    this.addOperation({
+      performer: performer,
       callback: callback,
     })
   }
 
-  public async addCustomFunc(func: () => Promise<void>) {
+  public addCustomFunc(func: () => Promise<void>) {
     const transaction = this._transactionInstance as FCTransaction
     this.operations.push({
-      entity: {
+      performer: {
         transaction: transaction,
         execute: func,
       },
@@ -49,8 +53,8 @@ export class DBTransaction {
       try {
         const retList: any[] = []
         for (const operation of this.operations) {
-          operation.entity.transaction = this._transactionInstance
-          const ret = await operation.entity.execute()
+          operation.performer.transaction = this._transactionInstance
+          const ret = await operation.performer.execute()
           retList.push(ret)
         }
         await this._transactionInstance.commit()

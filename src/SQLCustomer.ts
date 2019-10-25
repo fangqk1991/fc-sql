@@ -1,4 +1,4 @@
-import { TransactionOperation } from './DBTransaction'
+import { TransactionProtocol } from './DBTransaction'
 import { FCDatabase } from './FCDatabase'
 import { FCTransaction } from './FCTransaction'
 import * as assert from "assert"
@@ -6,7 +6,7 @@ import * as assert from "assert"
 /**
  * @description Use for insert-sql
  */
-export class SQLCustomer implements TransactionOperation {
+export class SQLCustomer implements TransactionProtocol {
   database: FCDatabase
   public transaction!: FCTransaction
   public forQuery = false

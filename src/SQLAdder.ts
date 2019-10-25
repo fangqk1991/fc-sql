@@ -51,7 +51,7 @@ export class SQLAdder extends SQLBuilderBase {
     } else {
       const transaction = new DBTransaction(this.database)
       await transaction.begin()
-      await transaction.addOperation(this)
+      transaction.addPerformer(this)
       const [lastInsertId] = (await transaction.commit()) as number[]
       return lastInsertId
     }
