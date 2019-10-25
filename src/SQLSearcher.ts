@@ -125,6 +125,10 @@ export class SQLSearcher extends SQLBuilderBase {
     return {query: query, stmtValues: [...this.stmtValues()]}
   }
 
+  public async execute() {
+    return this.queryList()
+  }
+
   /**
    * @description Execute it after preparing table, columns, conditions, get the record-list.
    */
@@ -149,7 +153,7 @@ export class SQLSearcher extends SQLBuilderBase {
       query = `${query} LIMIT ${this._offset}, ${this._length}`
     }
 
-    return (await this.database.query(query, stmtValues)) as { [p: string]: any }[]
+    return (await this.database.query(query, stmtValues, this.transaction)) as { [p: string]: any }[]
   }
 
   /**
@@ -181,7 +185,7 @@ export class SQLSearcher extends SQLBuilderBase {
       query = `${query} WHERE ${this.buildConditionStr()}`
     }
 
-    const result = await this.database.query(query, this.stmtValues())
+    const result = await this.database.query(query, this.stmtValues(), this.transaction)
     return result[0]['count'] as number
   }
 }

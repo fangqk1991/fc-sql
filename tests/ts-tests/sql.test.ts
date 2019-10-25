@@ -1,6 +1,5 @@
-import { FCDatabase, SQLAdder, SQLModifier, SQLRemover, SQLSearcher, SQLTransaction } from "../../src"
+import { FCDatabase, SQLAdder, SQLModifier, SQLRemover, SQLSearcher } from "../../src"
 import * as assert from "assert"
-import moment = require("moment")
 
 const database = FCDatabase.getInstance()
 database.init({
@@ -77,8 +76,9 @@ describe('Test SQL', () => {
       adder.insertKV('key1', data.key1)
       adder.insertKV('key2', data.key2)
       data.uid = await adder.execute()
+      console.error(`Last Insert ID: ${data.uid}`)
       const feeds = await database.query('SELECT * FROM demo_table WHERE uid = ?', [data.uid])
-      assert.ok(feeds.length === 1)
+      assert.equal(feeds.length, 1)
       const newData = feeds[0] as any
       assert.equal(data.uid, newData.uid)
       assert.equal(data.key1, newData.key1)
@@ -186,72 +186,6 @@ describe('Test Timezone', (): void => {
         }
       })
       assert.ok((await database.timezone()) === timezone)
-    }
-  })
-
-  it(`Test SQLTransaction`, async () => {
-    const key1 = `K1 - ${Math.random()}`
-    const count = 5
-    for (let i = 0; i < count; ++i) {
-      const adder = new SQLAdder(database)
-      adder.setTable('demo_table')
-      adder.insertKV('key1', key1)
-      adder.insertKV('key2', `K2 - ${Math.random()}`)
-      await adder.execute()
-    }
-
-    const searcher = new SQLSearcher(database)
-    searcher.setTable('demo_table')
-    searcher.setColumns(['uid', 'key1', 'key2'])
-    const items = await searcher.queryList()
-    const countBefore = items.length
-    console.log(`Count Before: ${countBefore}`)
-
-    const transaction = new SQLTransaction(database)
-
-    try {
-
-      await transaction.begin()
-      for (let i = 0; i < countBefore; ++i) {
-        if (i === Math.floor(countBefore / 2)) {
-          throw new Error('Some Error')
-        }
-        const item = items[i]
-        const remover = new SQLRemover(database)
-        remover.setTable('demo_table')
-        remover.addConditionKV('uid', item['uid'])
-        await remover.execute()
-      }
-      await transaction.commit()
-    } catch (e) {
-      console.log('Rollback.')
-      await transaction.rollback()
-    }
-
-    {
-      const searcher = new SQLSearcher(database)
-      searcher.setTable('demo_table')
-      searcher.setColumns(['uid', 'key1', 'key2'])
-      const items = await searcher.queryList()
-      const countAfter = items.length
-      console.log(`Count After: ${countAfter}`)
-      assert.equal(countBefore, countAfter)
-    }
-
-    {
-      const remover = new SQLRemover(database)
-      remover.setTable('demo_table')
-      remover.addConditionKV('key1', key1)
-      await remover.execute()
-    }
-
-    {
-      const searcher = new SQLSearcher(database)
-      searcher.setTable('demo_table')
-      searcher.setColumns(['uid', 'key1', 'key2'])
-      searcher.addConditionKV('key1', key1)
-      const count = await searcher.queryCount()
-      assert.equal(count, 0)
     }
   })
 })

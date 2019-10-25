@@ -11,7 +11,7 @@ export class DBTools {
     this._protocol = protocol
   }
 
-  async add(params: { [key: string]: (number | string) }): Promise<number> {
+  public makeAdder(params: { [key: string]: (number | string) }) {
     const protocol = this._protocol
     const database = protocol.database()
     const table = protocol.table()
@@ -23,10 +23,15 @@ export class DBTools {
       const value = (col in params) ? params[col] : null
       builder.insertKV(col, value)
     })
+    return builder
+  }
+
+  async add(params: { [key: string]: (number | string) }): Promise<number> {
+    const builder = this.makeAdder(params)
     return builder.execute()
   }
 
-  async update(params: { [key: string]: (number | string) }): Promise<void> {
+  public makeModifier(params: { [key: string]: (number | string) }) {
     const protocol = this._protocol
     const database = protocol.database()
     const table = protocol.table()
@@ -45,11 +50,15 @@ export class DBTools {
         builder.updateKV(col, params[col])
       }
     })
+    return builder
+  }
 
+  async update(params: { [key: string]: (number | string) }): Promise<void> {
+    const builder = this.makeModifier(params)
     await builder.execute()
   }
 
-  async delete(params: { [key: string]: (number | string) }): Promise<void> {
+  public makeRemover(params: { [key: string]: (number | string) }) {
     const protocol = this._protocol
     const database = protocol.database()
     const table = protocol.table()
@@ -61,10 +70,15 @@ export class DBTools {
     pKeys.forEach((key): void => {
       builder.checkPrimaryKey(params, key)
     })
+    return builder
+  }
+
+  async delete(params: { [key: string]: (number | string) }): Promise<void> {
+    const builder = this.makeRemover(params)
     await builder.execute()
   }
 
-  async searchSingle(params: { [key: string]: (number | string) }, checkPrimaryKey: boolean = true): Promise<null | {}> {
+  public makeSearcher(params: { [key: string]: (number | string) }, checkPrimaryKey: boolean = false) {
     const protocol = this._protocol
     if (checkPrimaryKey) {
       const pKey = protocol.primaryKey()
@@ -73,46 +87,35 @@ export class DBTools {
         assert.ok(key in params, `${this.constructor.name}: primary key missing.`)
       })
     }
-
-    const items = await this.fetchList(params, 0, 1)
-    if (items.length > 0) {
-      return items[0]
-    }
-    return null
-  }
-
-  async fetchList(params: { [key: string]: (number | string) } = {}, page: number = 0, length: number = 20): Promise<{ [key: string]: any }[]> {
-    const protocol = this._protocol
     const database = protocol.database()
     const table = protocol.table()
     const cols = protocol.cols()
 
     const builder = database.searcher()
     builder.setTable(table)
-    builder.setPageInfo(page, length)
     cols.forEach((col): void => {
       builder.addColumn(col)
     })
     for (const key in params) {
       builder.addConditionKV(key, params[key])
     }
+    return builder
+  }
+
+  async fetchList(params: { [key: string]: (number | string) } = {}, page: number = 0, length: number = 20): Promise<{ [key: string]: any }[]> {
+    const builder = this.makeSearcher(params)
+    builder.setPageInfo(page, length)
     return builder.queryList()
   }
 
   async fetchCount(params: { [key: string]: (number | string) } = {}): Promise<number> {
-    const protocol = this._protocol
-    const database = protocol.database()
-    const table = protocol.table()
-    const cols = protocol.cols()
-
-    const builder = database.searcher()
-    builder.setTable(table)
-    cols.forEach((col): void => {
-      builder.addColumn(col)
-    })
-    for (const key in params) {
-      builder.addConditionKV(key, params[key])
-    }
+    const builder = this.makeSearcher(params)
     return builder.queryCount()
+  }
+
+  async searchSingle(params: { [key: string]: (number | string) }, checkPrimaryKey: boolean = true): Promise<null | {}> {
+    const builder = this.makeSearcher(params, checkPrimaryKey)
+    builder.setLimitInfo(0, 1)
+    return builder.querySingle()
   }
 }

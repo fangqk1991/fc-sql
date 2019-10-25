@@ -1,10 +1,11 @@
-import { QueryTypes, Sequelize } from 'sequelize'
+import { QueryTypes, Sequelize, Transaction } from 'sequelize'
 import { SQLSearcher } from "./SQLSearcher"
 import { SQLAdder } from "./SQLAdder"
 import { SQLModifier } from './SQLModifier'
 import { SQLRemover } from "./SQLRemover"
 import { Options } from 'sequelize'
 import * as moment from 'moment'
+import { DBTransaction } from './DBTransaction'
 
 const _instanceMap: { [key: string]: FCDatabase } = {}
 
@@ -32,12 +33,16 @@ export class FCDatabase {
     this._options = options
   }
 
-  async query(query: string, replacements: (string | number | null)[] = []): Promise<{ [key: string]: any }[]> {
-    const items = (await this._db().query(query, {
+  async query(query: string, replacements: (string | number | null)[] = [], transaction: Transaction | null = null): Promise<{ [key: string]: any }[]> {
+    const options: any = {
       replacements: replacements,
       type: QueryTypes.SELECT,
-      raw: true
-    })) as any[]
+      raw: true,
+    }
+    if (transaction) {
+      options['transaction'] = transaction
+    }
+    const items = (await this._db().query(query, options)) as any[]
     if (items.length > 0) {
       const remainKeyMap = Object.keys(items[0]).reduce((result: any, cur: string) => {
         result[cur] = true
@@ -60,10 +65,14 @@ export class FCDatabase {
     return items as { [p: string]: number | string }[]
   }
 
-  async update(query: string, replacements: (string | number | null)[] = []): Promise<any> {
-    return this._db().query(query, {
+  public async update(query: string, replacements: (string | number | null)[] = [], transaction: Transaction | null = null): Promise<any> {
+    const options: any = {
       replacements: replacements
-    })
+    }
+    if (transaction) {
+      options['transaction'] = transaction
+    }
+    return this._db().query(query, options)
   }
 
   _db(): Sequelize {
@@ -87,6 +96,10 @@ export class FCDatabase {
 
   remover(): SQLRemover {
     return new SQLRemover(this)
+  }
+
+  public createTransaction() {
+    return new DBTransaction(this)
   }
 
   async timezone() {

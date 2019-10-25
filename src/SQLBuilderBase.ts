@@ -1,11 +1,16 @@
-import {FCDatabase} from './FCDatabase'
+import { FCDatabase } from './FCDatabase'
 import * as assert from 'assert'
+import { TransactionOperation } from './DBTransaction'
+import { FCTransaction } from './FCTransaction'
 
-export class SQLBuilderBase {
+export abstract class SQLBuilderBase implements TransactionOperation {
   database: FCDatabase
   conditionColumns: string[] = []
   conditionValues: (string | number)[] = []
   table: string = ''
+
+  public transaction!: FCTransaction
+  public abstract async execute(): Promise<any>
 
   constructor(database: FCDatabase) {
     this.database = database

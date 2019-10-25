@@ -1,5 +1,6 @@
-import {SQLBuilderBase} from './SQLBuilderBase'
+import { SQLBuilderBase } from './SQLBuilderBase'
 import * as assert from 'assert'
+import { DBTransaction } from './DBTransaction'
 
 /**
  * @description Use for insert-sql
@@ -19,7 +20,11 @@ export class SQLAdder extends SQLBuilderBase {
     return this
   }
 
-  public async execute(): Promise<number> {
+  public stmtValues(): (string | number | null)[] {
+    return this._insertValues
+  }
+
+  public async execute() {
     this.checkTableValid()
 
     const keys = this._insertKeys
@@ -37,13 +42,18 @@ export class SQLAdder extends SQLBuilderBase {
       }
     }
 
-    const query = `INSERT INTO ${this.table}(${keys2.join(', ')}) VALUES (${Array(values2.length).fill('?').join(', ')})`
-    await this.database.update(query, values2)
-    const data = (await this.database.query('SELECT LAST_INSERT_ID() AS lastInsertId')) as any
-    return data[0]['lastInsertId'] as number
-  }
+    if (this.transaction) {
+      const query = `INSERT INTO ${this.table}(${keys2.join(', ')}) VALUES (${Array(values2.length).fill('?').join(', ')})`
+      await this.database.update(query, values2, this.transaction)
 
-  public stmtValues(): (string | number | null)[] {
-    return this._insertValues
+      const data = (await this.database.query('SELECT LAST_INSERT_ID() AS lastInsertId', [], this.transaction)) as any
+      return data[0]['lastInsertId'] as number
+    } else {
+      const transaction = new DBTransaction(this.database)
+      await transaction.begin()
+      await transaction.addOperation(this)
+      const [lastInsertId] = (await transaction.commit()) as number[]
+      return lastInsertId
+    }
   }
 }
