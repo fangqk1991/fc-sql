@@ -1,15 +1,14 @@
 import { FCDatabase } from './FCDatabase'
 import * as assert from 'assert'
-import { TransactionProtocol } from './TransactionRunner'
-import { FCTransaction } from './FCTransaction'
+import { Transaction } from 'sequelize'
 
-export abstract class SQLBuilderBase implements TransactionProtocol {
+export abstract class SQLBuilderBase {
   database: FCDatabase
   conditionColumns: string[] = []
   conditionValues: (string | number)[] = []
   table: string = ''
 
-  public transaction!: FCTransaction
+  public transaction!: Transaction
   public abstract async execute(): Promise<any>
 
   constructor(database: FCDatabase) {

@@ -1,6 +1,7 @@
 import { FCDatabase, SQLAdder, SQLModifier, SQLRemover, SQLSearcher } from "../../src"
 import * as assert from 'assert'
-import { SQLCustomer } from '../../src/SQLCustomer'
+import { Transaction } from 'sequelize'
+import { NextAction } from '../../src/TransactionRunner'
 
 const database = FCDatabase.getInstance()
 database.init({
@@ -35,99 +36,90 @@ const buildSomeRecords = async (count: number) => {
 describe('Test TransactionRunner', () => {
   it(`Test Rollback`, async () => {
     await clearRecords()
-    const transaction = database.createTransaction()
-    await transaction.begin()
     const count = 5
-    for (let i = 0; i < count; ++i) {
-      const adder = new SQLAdder(database)
-      adder.setTable('demo_table_2')
-      adder.insertKV('key1', `K1 - ${Math.random()}`)
-      adder.insertKV('key2', `K2 - ${Math.random()}`)
-      transaction.addPerformer(adder, async () => {
-        assert.fail()
-      })
-
-      transaction.addCustomFunc(async () => {
-        await buildSomeRecords(2)
-        assert.equal(await globalSearcher.queryCount(), 2 * (i + 1))
-      })
-    }
     const errorMessage = 'Throw error deliberately.'
-    transaction.addCustomFunc(async () => {
-      throw new Error(errorMessage)
-    })
+    const runner = database.createTransactionRunner()
     try {
-      await transaction.commit()
+      await runner.commit(async (transaction: Transaction) => {
+        for (let i = 0; i < count; ++i) {
+          const adder = new SQLAdder(database)
+          adder.transaction = transaction
+          adder.setTable('demo_table_2')
+          adder.insertKV('key1', `K1 - ${Math.random()}`)
+          adder.insertKV('key2', `K2 - ${Math.random()}`)
+          await adder.execute()
+
+          await buildSomeRecords(2)
+          assert.equal(await globalSearcher.queryCount(), 2 * (i + 1))
+        }
+        throw new Error(errorMessage)
+      })
       assert.fail()
     } catch (e) {
       assert.equal(e.message, errorMessage)
     }
-
     assert.equal(await globalSearcher.queryCount(), 2 * count)
-    assert.equal(transaction.operations.length, 0)
   })
 
   it(`Test Normal`, async () => {
     await clearRecords()
 
-    const transaction = database.createTransaction()
-    await transaction.begin()
     const count = 5
-    for (let i = 0; i < count; ++i) {
-      const adder = new SQLAdder(database)
-      adder.setTable('demo_table_2')
-      adder.insertKV('key1', `K1 - ${Math.random()}`)
-      adder.insertKV('key2', `K2 - ${Math.random()}`)
-      transaction.addCustomFunc(async () => {
-        console.log(`Fake operation: Index - ${i}`)
-      })
-
-      transaction.addPerformer(adder, async (uid: number) => {
-        console.log(`Transaction callback: [uid: ${uid}]`)
-        assert.ok(uid > 0)
-      })
-
-      {
-        const customer = SQLCustomer.searcher(database)
-        customer.setEntity('SELECT COUNT(*) AS count FROM demo_table_2')
-
-        transaction.addPerformer(customer, async (items: any) => {
-          assert.ok(Array.isArray(items))
-          const count = items[0]['count']
-          assert.equal(count, i + 1)
-        })
-      }
-    }
-
-    const key2Desc = 'zxcvbn'
-    {
-      const customer = SQLCustomer.editor(database)
-      customer.setEntity('UPDATE demo_table_2 SET key2 = ?', key2Desc)
-      transaction.addPerformer(customer)
-    }
-
     const modifyUid = 1
     const modifyContent = '345678'
     const deleteUid = 2
+    const key2Desc = 'zxcvbn'
 
-    {
+    const transaction = database.createTransactionRunner()
+    await transaction.commit(async (transaction: Transaction) => {
+      const nextActions: NextAction[] = []
+      for (let i = 0; i < count; ++i) {
+        console.log(`Fake operation: Index - ${i}`)
+        const adder = new SQLAdder(database)
+        adder.transaction = transaction
+        adder.setTable('demo_table_2')
+        adder.insertKV('key1', `K1 - ${Math.random()}`)
+        adder.insertKV('key2', `K2 - ${Math.random()}`)
+        const uid = await adder.execute()
+        nextActions.push(async () => {
+          console.log(`After transaction committed: [uid: ${uid}]`)
+          assert.ok(uid > 0)
+        })
+
+        {
+          const items = await database.query('SELECT COUNT(*) AS count FROM demo_table_2')
+          assert.ok(Array.isArray(items))
+          const count = items[0]['count']
+          assert.equal(count, 0)
+        }
+
+        {
+          const items = await database.query('SELECT COUNT(*) AS count FROM demo_table_2', [], transaction)
+          assert.ok(Array.isArray(items))
+          const count = items[0]['count']
+          assert.equal(count, i + 1)
+        }
+      }
+
       const modifier = new SQLModifier(database)
+      modifier.transaction = transaction
       modifier.setTable('demo_table_2')
       modifier.updateKV('key1', modifyContent)
       modifier.addConditionKV('uid', modifyUid)
-      transaction.addPerformer(modifier)
-    }
-    {
-      const modifier = new SQLRemover(database)
-      modifier.setTable('demo_table_2')
-      modifier.addConditionKV('uid', deleteUid)
-      transaction.addPerformer(modifier)
-    }
+      await modifier.execute()
 
-    await transaction.commit()
+      const remover = new SQLRemover(database)
+      remover.transaction = transaction
+      remover.setTable('demo_table_2')
+      remover.addConditionKV('uid', deleteUid)
+      await remover.execute()
+
+      return nextActions
+    })
 
     assert.equal(await globalSearcher.queryCount(), count - 1)
 
+    await database.update('UPDATE demo_table_2 SET key2 = ?', [key2Desc])
     {
       const searcher = new SQLSearcher(database)
       searcher.setTable('demo_table_2')

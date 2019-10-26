@@ -98,7 +98,7 @@ export class FCDatabase {
     return new SQLRemover(this)
   }
 
-  public createTransaction() {
+  public createTransactionRunner() {
     return new TransactionRunner(this)
   }
 

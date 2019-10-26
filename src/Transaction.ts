@@ -1,2 +1,2 @@
 import { Transaction } from 'sequelize'
-export { Transaction as FCTransaction }
+export { Transaction }

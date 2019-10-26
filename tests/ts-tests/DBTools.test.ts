@@ -57,7 +57,7 @@ globalSearcher.setColumns(['*'])
 describe('Test DBTools', (): void => {
   it(`Test DBTools`, async (): Promise<void> => {
     const tools = new DBTools(new MyProtocol())
-    const countBefore = await tools.fetchCount({})
+    const countBefore = await tools.makeSearcher({}).queryCount()
 
     const count = 5
     for (let i = 0; i < count; ++i) {
@@ -70,37 +70,33 @@ describe('Test DBTools', (): void => {
         key1: data.key1,
         key2: data.key2,
       })
-      const newData = (await tools.searchSingle({ uid: data.uid })) as any
+      const newData = (await tools.makeSearcher({ uid: data.uid }).querySingle()) as any
       assert.equal(data.uid, newData.uid)
       assert.equal(data.key1, newData.key1)
       assert.equal(data.key2, newData.key2)
     }
 
-    const countAfter = await tools.fetchCount({})
+    const countAfter = await tools.makeSearcher({}).queryCount()
     assert.ok(countBefore + count === countAfter)
 
-    const items = await tools.fetchList({}, -1)
+    const items = await tools.makeSearcher({}).queryList()
     const watchUID = items[0]['uid'] as string
-    const feed = await tools.searchSingle({
+    const options = {
       uid: watchUID
-    }) as { uid: string; key1: string; key2: string }
+    }
+    const feed = await tools.makeSearcher(options).querySingle() as { uid: string; key1: string; key2: string }
     await tools.update({
       uid: watchUID,
       key1: 'K1 - New',
     })
-    const feed2 = await tools.searchSingle({
-      uid: watchUID
-    }) as { uid: string; key1: string; key2: string }
+
+    const feed2 = await tools.makeSearcher(options).querySingle() as { uid: string; key1: string; key2: string }
     assert.ok(feed.uid === feed2.uid)
     assert.ok(feed.key2 === feed2.key2)
     assert.ok(feed2.key1 === 'K1 - New')
 
-    await tools.delete({
-      uid: watchUID
-    })
-    const feed3 = await tools.searchSingle({
-      uid: watchUID
-    })
+    await tools.delete(options)
+    const feed3 = await tools.makeSearcher(options).querySingle()
     assert.ok(feed3 === null)
   })
 })

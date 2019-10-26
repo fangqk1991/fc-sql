@@ -1,6 +1,5 @@
 import { SQLBuilderBase } from './SQLBuilderBase'
 import * as assert from 'assert'
-import { TransactionRunner } from './TransactionRunner'
 
 /**
  * @description Use for insert-sql
@@ -45,15 +44,14 @@ export class SQLAdder extends SQLBuilderBase {
     if (this.transaction) {
       const query = `INSERT INTO ${this.table}(${keys2.join(', ')}) VALUES (${Array(values2.length).fill('?').join(', ')})`
       await this.database.update(query, values2, this.transaction)
-
       const data = (await this.database.query('SELECT LAST_INSERT_ID() AS lastInsertId', [], this.transaction)) as any
       return data[0]['lastInsertId'] as number
-    } else {
-      const transaction = new TransactionRunner(this.database)
-      await transaction.begin()
-      transaction.addPerformer(this)
-      const [lastInsertId] = (await transaction.commit()) as number[]
-      return lastInsertId
     }
+
+    const transaction = await this.database._db().transaction()
+    this.transaction = transaction
+    const lastInsertId: number = await this.execute()
+    await transaction.commit()
+    return lastInsertId
   }
 }
