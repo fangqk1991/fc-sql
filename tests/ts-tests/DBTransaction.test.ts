@@ -135,7 +135,7 @@ describe('Test TransactionRunner', () => {
       searcher.setColumns(['*'])
       searcher.addConditionKV('uid', deleteUid)
       const data = await searcher.querySingle()
-      assert.equal(data, null)
+      assert.equal(data, undefined)
     }
 
     {

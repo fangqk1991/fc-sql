@@ -157,7 +157,7 @@ export class SQLSearcher extends SQLBuilderBase {
   }
 
   /**
-   * @description Got the first element of the return of 'queryList()', if list is empty, 'querySingle()' will return null.
+   * @description Got the first element of the return of 'queryList()', if list is empty, 'querySingle()' will return undefined.
    */
   public async querySingle() {
     this.setLimitInfo(0, 1)
@@ -165,7 +165,7 @@ export class SQLSearcher extends SQLBuilderBase {
     if (items.length > 0) {
       return items[0]
     }
-    return null
+    return undefined
   }
 
   /**

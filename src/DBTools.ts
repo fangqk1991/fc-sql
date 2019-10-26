@@ -55,7 +55,7 @@ export class DBTools {
   /**
    * @deprecated Please user searcher.querySingle instead.
    */
-  async searchSingle(params: Params): Promise<null | {}> {
+  async searchSingle(params: Params): Promise<undefined | {}> {
     const builder = this.makeSearcher(params)
     builder.setLimitInfo(0, 1)
     return builder.querySingle()
