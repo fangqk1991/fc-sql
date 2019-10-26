@@ -1,7 +1,7 @@
 import { FCDatabase, SQLAdder, SQLModifier, SQLRemover, SQLSearcher } from "../../src"
 import * as assert from 'assert'
 import { Transaction } from 'sequelize'
-import { NextAction } from '../../src/TransactionRunner'
+import { NextAction } from '../../src'
 
 const database = FCDatabase.getInstance()
 database.init({
@@ -38,9 +38,9 @@ describe('Test TransactionRunner', () => {
     await clearRecords()
     const count = 5
     const errorMessage = 'Throw error deliberately.'
-    const runner = database.createTransactionRunner()
+    const transactionRunner = database.createTransactionRunner()
     try {
-      await runner.commit(async (transaction: Transaction) => {
+      await transactionRunner.commit(async (transaction: Transaction) => {
         for (let i = 0; i < count; ++i) {
           const adder = new SQLAdder(database)
           adder.transaction = transaction
@@ -70,8 +70,8 @@ describe('Test TransactionRunner', () => {
     const deleteUid = 2
     const key2Desc = 'zxcvbn'
 
-    const transaction = database.createTransactionRunner()
-    await transaction.commit(async (transaction: Transaction) => {
+    const transactionRunner = database.createTransactionRunner()
+    await transactionRunner.commit(async (transaction) => {
       const nextActions: NextAction[] = []
       for (let i = 0; i < count; ++i) {
         console.log(`Fake operation: Index - ${i}`)
