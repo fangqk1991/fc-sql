@@ -13,10 +13,10 @@ export interface TransactionOperation {
   callback?: OperationCallback;
 }
 
-export class DBTransaction {
+export class TransactionRunner {
   public readonly operations: TransactionOperation[]
   private database: FCDatabase
-  private _transactionInstance?: FCTransaction
+  private _transaction?: FCTransaction
 
   constructor(database: FCDatabase) {
     this.database = database
@@ -24,7 +24,7 @@ export class DBTransaction {
   }
 
   public async begin() {
-    this._transactionInstance = await this.database._db().transaction()
+    this._transaction = await this.database._db().transaction()
   }
 
   public addOperation(operation: TransactionOperation) {
@@ -38,8 +38,8 @@ export class DBTransaction {
     })
   }
 
-  public addCustomFunc(func: () => Promise<void>) {
-    const transaction = this._transactionInstance as FCTransaction
+  public addCustomFunc(func: (transaction?: FCTransaction) => Promise<void>) {
+    const transaction = this._transaction as FCTransaction
     this.operations.push({
       performer: {
         transaction: transaction,
@@ -49,15 +49,18 @@ export class DBTransaction {
   }
 
   public async commit() {
-    if (this._transactionInstance) {
+    if (this._transaction) {
       try {
         const retList: any[] = []
         for (const operation of this.operations) {
-          operation.performer.transaction = this._transactionInstance
+          operation.performer.transaction = this._transaction
           const ret = await operation.performer.execute()
+          console.error(`performer execute`)
           retList.push(ret)
         }
-        await this._transactionInstance.commit()
+        console.error(`performer commit before`)
+        await this._transaction.commit()
+        console.error(`performer commit after`)
 
         for (let i = 0; i < this.operations.length; ++i) {
           const operation = this.operations[i]
@@ -69,7 +72,7 @@ export class DBTransaction {
         }
         return retList
       } catch (e) {
-        console.error(`DBTransaction: Catch an error "${e.message}", transaction rollback`)
+        console.error(`TransactionRunner: Catch an error "${e.message}", transaction rollback`)
         await this.rollback()
         throw e
       }
@@ -77,8 +80,8 @@ export class DBTransaction {
   }
 
   public async rollback() {
-    if (this._transactionInstance) {
-      await this._transactionInstance.rollback()
+    if (this._transaction) {
+      await this._transaction.rollback()
       this.operations.length = 0
     }
   }

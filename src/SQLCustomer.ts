@@ -1,4 +1,4 @@
-import { TransactionProtocol } from './DBTransaction'
+import { TransactionProtocol } from './TransactionRunner'
 import { FCDatabase } from './FCDatabase'
 import { FCTransaction } from './FCTransaction'
 import * as assert from "assert"

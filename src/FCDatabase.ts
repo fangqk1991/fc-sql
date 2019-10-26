@@ -5,7 +5,7 @@ import { SQLModifier } from './SQLModifier'
 import { SQLRemover } from "./SQLRemover"
 import { Options } from 'sequelize'
 import * as moment from 'moment'
-import { DBTransaction } from './DBTransaction'
+import { TransactionRunner } from './TransactionRunner'
 
 const _instanceMap: { [key: string]: FCDatabase } = {}
 
@@ -99,7 +99,7 @@ export class FCDatabase {
   }
 
   public createTransaction() {
-    return new DBTransaction(this)
+    return new TransactionRunner(this)
   }
 
   async timezone() {

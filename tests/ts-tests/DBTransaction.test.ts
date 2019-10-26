@@ -32,7 +32,7 @@ const buildSomeRecords = async (count: number) => {
   }
 }
 
-describe('Test DBTransaction', () => {
+describe('Test TransactionRunner', () => {
   it(`Test Rollback`, async () => {
     await clearRecords()
     const transaction = database.createTransaction()

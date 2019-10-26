@@ -1,6 +1,6 @@
 import { FCDatabase } from './FCDatabase'
 import * as assert from 'assert'
-import { TransactionProtocol } from './DBTransaction'
+import { TransactionProtocol } from './TransactionRunner'
 import { FCTransaction } from './FCTransaction'
 
 export abstract class SQLBuilderBase implements TransactionProtocol {
