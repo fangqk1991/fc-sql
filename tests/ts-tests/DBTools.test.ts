@@ -97,6 +97,6 @@ describe('Test DBTools', (): void => {
 
     await tools.delete(options)
     const feed3 = await tools.makeSearcher(options).querySingle()
-    assert.equal(feed3, undefined)
+    assert.ok(feed3 === undefined)
   })
 })
