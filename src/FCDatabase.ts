@@ -6,6 +6,7 @@ import { SQLRemover } from "./SQLRemover"
 import { Options } from 'sequelize'
 import * as moment from 'moment'
 import { TransactionRunner } from './TransactionRunner'
+import { DBTableHandler } from './DBTableHandler'
 
 const _instanceMap: { [key: string]: FCDatabase } = {}
 
@@ -100,6 +101,10 @@ export class FCDatabase {
 
   remover(): SQLRemover {
     return new SQLRemover(this)
+  }
+
+  public tableHandler(tableName: string): DBTableHandler {
+    return new DBTableHandler(this, tableName)
   }
 
   public createTransactionRunner() {

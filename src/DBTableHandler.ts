@@ -14,7 +14,7 @@ export interface DBColumn {
   Comment: string;
 }
 
-export class DBTable {
+export class DBTableHandler {
   public tableName: string
   public database: FCDatabase
   public transaction!: Transaction
