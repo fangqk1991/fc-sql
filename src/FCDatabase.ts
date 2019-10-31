@@ -33,6 +33,10 @@ export class FCDatabase {
     this._options = options
   }
 
+  dbName() {
+    return this._options.database as string
+  }
+
   async query(query: string, replacements: (string | number | null)[] = [], transaction: Transaction | null = null): Promise<{ [key: string]: any }[]> {
     const options: any = {
       replacements: replacements,
