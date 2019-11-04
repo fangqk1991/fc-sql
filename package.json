@@ -1,6 +1,6 @@
 {
   "name": "fc-sql",
-  "version": "0.12.4",
+  "version": "0.12.5",
   "description": "A simple sql framework for node.",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
@@ -14,7 +14,6 @@
   "author": "fang <me@fangqk.com>",
   "license": "MIT",
   "devDependencies": {
-    "sequelize": "^5.21.2",
     "@types/assert": "^1.4.3",
     "@types/mocha": "^5.2.7",
     "@types/sequelize": "^4.28.6",
@@ -35,12 +34,10 @@
     "typescript": "^3.6.4"
   },
   "dependencies": {
+    "sequelize": ">=4",
     "moment": "^2.24.0",
     "mysql2": "^1.7.0",
     "tslib": "^1.10.0"
-  },
-  "peerDependencies": {
-    "sequelize": "5"
   },
   "files": [
     "lib/*"
