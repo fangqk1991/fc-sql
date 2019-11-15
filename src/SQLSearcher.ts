@@ -59,6 +59,11 @@ export class SQLSearcher extends SQLBuilderBase {
     return this
   }
 
+  public removeAllOrderRules() {
+    this._orderRules = []
+    this._orderStmts = []
+  }
+
   /**
    * @description Pass page index and lengthPerPage to build limit info, page's first index is 0
    * @param page {number}
