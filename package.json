@@ -1,6 +1,6 @@
 {
   "name": "fc-sql",
-  "version": "0.12.6",
+  "version": "0.13.0",
   "description": "A simple sql framework for node.",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
