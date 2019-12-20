@@ -77,12 +77,25 @@ describe('Test SQL', () => {
       adder.insertKV('key2', data.key2)
       data.uid = await adder.execute()
       console.error(`Last Insert ID: ${data.uid}`)
-      const feeds = await database.query('SELECT * FROM demo_table WHERE uid = ?', [data.uid])
-      assert.equal(feeds.length, 1)
-      const newData = feeds[0] as any
+      const [newData] = await database.query('SELECT * FROM demo_table WHERE uid = ?', [data.uid])
       assert.equal(data.uid, newData.uid)
       assert.equal(data.key1, newData.key1)
       assert.equal(data.key2, newData.key2)
+
+      const newKey1 = `K1 - ${Math.random()}`
+      const newKey2 = `K2 - ${Math.random()}`
+      const superAdder = new SQLAdder(database)
+      superAdder.setTable('demo_table')
+      superAdder.useUpdateWhenDuplicate()
+      superAdder.insertKV('uid', newData.uid)
+      superAdder.insertKV('key1', newKey1)
+      superAdder.insertKV('key2', newKey2)
+      await superAdder.execute()
+
+      const [newData2] = await database.query('SELECT * FROM demo_table WHERE uid = ?', [newData.uid])
+      assert.equal(newData2.uid, newData.uid)
+      assert.equal(newData2.key1, newKey1)
+      assert.equal(newData2.key2, newKey2)
     }
 
     const countAfter = await globalSearcher.queryCount()

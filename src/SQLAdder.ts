@@ -7,6 +7,7 @@ import * as assert from 'assert'
 export class SQLAdder extends SQLBuilderBase {
   _insertKeys: string[] = []
   _insertValues: (string | number | null)[] = []
+  _updateWhenDuplicate = false
 
   /**
    * @description Pass the column you want to insert, and the new value.
@@ -17,6 +18,10 @@ export class SQLAdder extends SQLBuilderBase {
     this._insertKeys.push(key)
     this._insertValues.push(value)
     return this
+  }
+
+  public useUpdateWhenDuplicate() {
+    this._updateWhenDuplicate = true
   }
 
   public stmtValues(): (string | number | null)[] {
@@ -42,7 +47,11 @@ export class SQLAdder extends SQLBuilderBase {
     }
 
     if (this.transaction) {
-      const query = `INSERT INTO ${this.table}(${keys2.join(', ')}) VALUES (${Array(values2.length).fill('?').join(', ')})`
+      let query = `INSERT INTO ${this.table}(${keys2.join(', ')}) VALUES (${Array(values2.length).fill('?').join(', ')})`
+      if (this._updateWhenDuplicate) {
+        const additionItems = keys2.map((key) => `${key} = VALUES(${key})`)
+        query = `${query} ON DUPLICATE KEY UPDATE ${additionItems.join(', ')}`
+      }
       await this.database.update(query, values2, this.transaction)
       const data = (await this.database.query('SELECT LAST_INSERT_ID() AS lastInsertId', [], this.transaction)) as any
       return data[0]['lastInsertId'] as number
