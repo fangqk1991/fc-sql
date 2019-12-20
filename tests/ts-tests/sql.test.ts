@@ -1,6 +1,5 @@
-import { FCDatabase, SQLAdder, SQLModifier, SQLRemover, SQLSearcher } from "../../src"
+import { FCDatabase, SQLAdder, SQLBulkAdder, SQLModifier, SQLRemover, SQLSearcher } from "../../src"
 import * as assert from "assert"
-import { SQLBulkAdder } from '../../src/SQLBulkAdder'
 
 const database = FCDatabase.getInstance()
 database.init({
