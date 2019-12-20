@@ -1,5 +1,6 @@
 import { FCDatabase, SQLAdder, SQLModifier, SQLRemover, SQLSearcher } from "../../src"
 import * as assert from "assert"
+import { SQLBulkAdder } from '../../src/SQLBulkAdder'
 
 const database = FCDatabase.getInstance()
 database.init({
@@ -9,7 +10,7 @@ database.init({
   database: 'demo_db',
   username: 'root',
   password: '',
-  timezone: '+00:00'
+  timezone: '+00:00',
   // logging: false,
 })
 
@@ -100,6 +101,54 @@ describe('Test SQL', () => {
 
     const countAfter = await globalSearcher.queryCount()
     assert.ok(countBefore + count === countAfter)
+  })
+
+  it(`Test SQLBulkAdder`, async () => {
+    const countBefore = await globalSearcher.queryCount()
+    const count = 5
+    {
+      const bulkAdder = new SQLBulkAdder(database)
+      bulkAdder.setTable('demo_table')
+      bulkAdder.setInsertKeys(['key1', 'key2'])
+      for (let i = 0; i < count; ++i) {
+        bulkAdder.putObject({
+          key1: `Bulk K1 - ${Math.random()}`,
+          key2: `Bulk K2 - ${Math.random()}`,
+        })
+      }
+      await bulkAdder.execute()
+    }
+
+    const countAfter = await globalSearcher.queryCount()
+    assert.strictEqual(countBefore + count, countAfter)
+
+    const feeds = await database.query(`SELECT * FROM demo_table ORDER BY uid DESC LIMIT ${count}`)
+    const newDataList = feeds.map((feed) => {
+      return {
+        uid: feed['uid'],
+        key1: `Dup K1 - ${Math.random()}`,
+        key2: `Dup K2 - ${Math.random()}`,
+      }
+    })
+    {
+      const bulkAdder = new SQLBulkAdder(database)
+      bulkAdder.setTable('demo_table')
+      bulkAdder.useUpdateWhenDuplicate()
+      bulkAdder.setInsertKeys(['uid', 'key1', 'key2'])
+      newDataList.forEach((newData) => {
+        bulkAdder.putObject(newData)
+      })
+      await bulkAdder.execute()
+    }
+    const countAfter2 = await globalSearcher.queryCount()
+    assert.strictEqual(countAfter, countAfter2)
+
+    for (const newData of newDataList) {
+      const [newData2] = await database.query('SELECT * FROM demo_table WHERE uid = ?', [newData.uid])
+      assert.equal(newData2.uid, newData.uid)
+      assert.equal(newData2.key1, newData.key1)
+      assert.equal(newData2.key2, newData.key2)
+    }
   })
 
   it(`Test SQLModifier`, async () => {

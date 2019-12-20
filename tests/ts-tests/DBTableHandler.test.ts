@@ -27,7 +27,7 @@ describe('Test FCTable', () => {
   })
 
   it(`Test Create / Drop`, async () => {
-    const testTableName = 'temp_table_1'
+    const testTableName = 'temp_table_2'
     const tableHandler = new DBTableHandler(database, testTableName)
     await tableHandler.dropFromDatabase()
     assert.equal(await tableHandler.checkTableExists(), false)
