@@ -47,5 +47,9 @@ describe('Test FCTable', () => {
     await tableHandler.dropColumn('col_2')
     const columns3 = await tableHandler.getColumns()
     assert.equal(columns2.length - 1, columns3.length)
+
+    await tableHandler.changeColumn('col_1', 'BIGINT')
+    const columns4 = await tableHandler.getColumns()
+    assert.equal(columns3.length, columns4.length)
   })
 })

@@ -63,6 +63,11 @@ export class DBTableHandler {
     await this.database.update(sql, [], this.transaction)
   }
 
+  public async changeColumn(columnName: string, columnSpec: string) {
+    const sql = `ALTER TABLE \`${this.tableName}\` CHANGE \`${columnName}\` \`${columnName}\` ${columnSpec}`
+    await this.database.update(sql, [], this.transaction)
+  }
+
   public async dropColumn(columnName: string) {
     const sql = `ALTER TABLE \`${this.tableName}\` DROP \`${columnName}\``
     await this.database.update(sql, [], this.transaction)
