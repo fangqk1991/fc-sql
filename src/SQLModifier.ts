@@ -14,7 +14,7 @@ export class SQLModifier extends SQLBuilderBase {
    * @param value {string | number | null}
    */
   updateKV(key: string, value: string | number | null) {
-    this._updateColumns.push(`${key} = ?`)
+    this._updateColumns.push(`\`${key}\` = ?`)
     this._updateValues.push(value)
     return this
   }
