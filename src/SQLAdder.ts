@@ -57,10 +57,12 @@ export class SQLAdder extends SQLBuilderBase {
       return data[0]['lastInsertId'] as number
     }
 
-    const transaction = await this.database._db().transaction()
-    this.transaction = transaction
-    const lastInsertId: number = await this.execute()
-    await transaction.commit()
+    let lastInsertId = 0
+    const transactionRunner = this.database.createTransactionRunner()
+    await transactionRunner.commit(async (transaction) => {
+      this.transaction = transaction
+      lastInsertId = (await this.execute()) as number
+    })
     return lastInsertId
   }
 }
