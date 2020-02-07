@@ -1,9 +1,8 @@
-import {DBProtocol} from './DBProtocol'
-import * as assert from 'assert'
+import { DBProtocol } from './DBProtocol'
 import { Transaction } from 'sequelize'
 
 interface Params {
-  [key: string]: number | string
+  [key: string]: number | string;
 }
 
 /**
@@ -23,6 +22,20 @@ export class DBTools {
   async add(params: Params): Promise<number> {
     const performer = this.makeAdder(params)
     return performer.execute()
+  }
+
+  async weakAdd(params: Params) {
+    const primaryKey = this._protocol.primaryKey()
+    const performer = this.makeAdder(params)
+    performer.setFixedKey(Array.isArray(primaryKey) ? primaryKey[0] : primaryKey)
+    performer.keepOldDataWhenDuplicate()
+    await performer.execute()
+  }
+
+  async strongAdd(params: Params) {
+    const performer = this.makeAdder(params)
+    performer.useUpdateWhenDuplicate()
+    await performer.execute()
   }
 
   async update(params: Params): Promise<void> {
@@ -71,7 +84,7 @@ export class DBTools {
     builder.transaction = this.transaction
     builder.setTable(table)
     cols.forEach((col): void => {
-      const value = (col in params) ? params[col] : null
+      const value = col in params ? params[col] : null
       builder.insertKV(col, value)
     })
     return builder
