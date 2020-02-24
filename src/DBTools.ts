@@ -78,7 +78,7 @@ export class DBTools {
     const builder = protocol.database.adder()
     builder.transaction = this.transaction
     builder.setTable(protocol.table)
-    protocol.insertableCols.forEach((col) => {
+    protocol.insertableCols().forEach((col) => {
       const value = col in params ? params[col] : null
       builder.insertKV(col, value)
     })
@@ -90,11 +90,11 @@ export class DBTools {
     const builder = protocol.database.modifier()
     builder.transaction = this.transaction
     builder.setTable(protocol.table)
-    protocol.primaryKeys.forEach((key) => {
+    protocol.primaryKeys().forEach((key) => {
       builder.checkPrimaryKey(params, key)
       delete params[key]
     })
-    protocol.modifiableCols.forEach((col) => {
+    protocol.modifiableCols().forEach((col) => {
       if (col in params) {
         builder.updateKV(col, params[col])
       }
@@ -107,7 +107,7 @@ export class DBTools {
     const builder = protocol.database.remover()
     builder.transaction = this.transaction
     builder.setTable(protocol.table)
-    protocol.primaryKeys.forEach((key) => {
+    protocol.primaryKeys().forEach((key) => {
       builder.checkPrimaryKey(params, key)
     })
     return builder
@@ -118,7 +118,7 @@ export class DBTools {
     const builder = protocol.database.searcher()
     builder.transaction = this.transaction
     builder.setTable(protocol.table)
-    protocol.cols.forEach((col) => {
+    protocol.cols().forEach((col) => {
       builder.addColumn(col)
     })
     Object.keys(params).forEach((key) => {

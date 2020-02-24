@@ -71,23 +71,39 @@ export class DBSpec implements DBProtocolV2 {
   public readonly database!: FCDatabase
   public readonly table!: string
   public readonly primaryKey!: string
-  public readonly primaryKeys!: string[]
-  public readonly cols!: string[]
-  public readonly insertableCols!: string[]
-  public readonly modifiableCols!: string[]
+  private readonly _primaryKeys!: string[]
+  private readonly _cols!: string[]
+  private readonly _insertableCols!: string[]
+  private readonly _modifiableCols!: string[]
 
   constructor(protocol: DBProtocol | DBProtocolV2) {
     this.database = protocol.database instanceof Function ? protocol.database() : protocol.database
     this.table = protocol.table instanceof Function ? protocol.table() : protocol.table
     const primaryKey = protocol.primaryKey instanceof Function ? protocol.primaryKey() : protocol.primaryKey
-    this.primaryKeys = Array.isArray(primaryKey) ? primaryKey : [primaryKey]
-    this.primaryKey = this.primaryKeys[0]
-    this.cols = protocol.cols instanceof Function ? protocol.cols() : protocol.cols
+    this._primaryKeys = Array.isArray(primaryKey) ? primaryKey : [primaryKey]
+    this.primaryKey = this._primaryKeys[0]
+    this._cols = protocol.cols instanceof Function ? protocol.cols() : protocol.cols
     const insertableCols =
       protocol.insertableCols instanceof Function ? protocol.insertableCols() : protocol.insertableCols
-    this.insertableCols = insertableCols || []
+    this._insertableCols = insertableCols || []
     const modifiableCols =
       protocol.modifiableCols instanceof Function ? protocol.modifiableCols() : protocol.modifiableCols
-    this.modifiableCols = modifiableCols || []
+    this._modifiableCols = modifiableCols || []
+  }
+
+  public primaryKeys() {
+    return this._primaryKeys
+  }
+
+  public cols() {
+    return this._cols
+  }
+
+  public insertableCols() {
+    return this._insertableCols
+  }
+
+  public modifiableCols() {
+    return this._modifiableCols
   }
 }
