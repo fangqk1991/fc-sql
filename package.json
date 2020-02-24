@@ -39,6 +39,16 @@
     "mysql2": "^1.7.0",
     "tslib": "^1.10.0"
   },
+  "prettier": {
+    "arrowParens": "always",
+    "bracketSpacing": true,
+    "jsxBracketSameLine": false,
+    "jsxSingleQuote": true,
+    "printWidth": 120,
+    "semi": false,
+    "singleQuote": true,
+    "trailingComma": "es5"
+  },
   "files": [
     "lib/*"
   ],
