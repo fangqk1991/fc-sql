@@ -85,9 +85,9 @@ export class DBSpec implements DBProtocolV2 {
     this.cols = protocol.cols instanceof Function ? protocol.cols() : protocol.cols
     const insertableCols =
       protocol.insertableCols instanceof Function ? protocol.insertableCols() : protocol.insertableCols
-    this.insertableCols = insertableCols || [...this.cols]
+    this.insertableCols = insertableCols || []
     const modifiableCols =
       protocol.modifiableCols instanceof Function ? protocol.modifiableCols() : protocol.modifiableCols
-    this.modifiableCols = modifiableCols || [...this.insertableCols]
+    this.modifiableCols = modifiableCols || []
   }
 }
