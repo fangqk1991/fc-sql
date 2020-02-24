@@ -96,14 +96,14 @@ export class DBSpec implements DBProtocolV2 {
   }
 
   public cols() {
-    return this._cols
+    return [...this._cols]
   }
 
   public insertableCols() {
-    return this._insertableCols
+    return [...this._insertableCols]
   }
 
   public modifiableCols() {
-    return this._modifiableCols
+    return [...this._modifiableCols]
   }
 }
