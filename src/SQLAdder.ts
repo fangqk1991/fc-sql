@@ -1,5 +1,6 @@
 import { SQLBuilderBase } from './SQLBuilderBase'
 import * as assert from 'assert'
+import * as moment from 'moment'
 
 /**
  * @description Use for insert-sql
@@ -10,6 +11,7 @@ export class SQLAdder extends SQLBuilderBase {
   _updateWhenDuplicate = false
   _keepOldDataWhenDuplicate = false
   _fixedKey: string = ''
+  _timestampMap: { [p: string]: boolean } = {}
 
   /**
    * @description Pass the column you want to insert, and the new value.
@@ -19,6 +21,12 @@ export class SQLAdder extends SQLBuilderBase {
   public insertKV(key: string, value: string | number | null) {
     this._insertKeys.push(key)
     this._insertValues.push(value)
+    return this
+  }
+
+  public insertKVForTimestamp(key: string, value: Date | string | any) {
+    this._timestampMap[key] = true
+    this.insertKV(key, moment(value).unix())
     return this
   }
 
@@ -53,17 +61,17 @@ export class SQLAdder extends SQLBuilderBase {
 
     const keys2 = []
     const values2 = []
+    const quotes = []
     for (let i = 0; i < values.length; ++i) {
       if (values[i] !== null && values[i] !== undefined) {
         keys2.push(`\`${keys[i]}\``)
         values2.push(values[i])
+        quotes.push(this._timestampMap[keys[i]] ? `FROM_UNIXTIME(?)` : '?')
       }
     }
 
     if (this.transaction) {
-      let query = `INSERT INTO ${this.table}(${keys2.join(', ')}) VALUES (${Array(values2.length)
-        .fill('?')
-        .join(', ')})`
+      let query = `INSERT INTO ${this.table}(${keys2.join(', ')}) VALUES (${quotes.join(', ')})`
       if (this._updateWhenDuplicate) {
         const additionItems = keys2.map((key) => `${key} = VALUES(${key})`)
         query = `${query} ON DUPLICATE KEY UPDATE ${additionItems.join(', ')}`

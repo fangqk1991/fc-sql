@@ -1,19 +1,19 @@
-import { DBProtocol } from './DBProtocol'
+import { DBProtocolV2, DBSpec } from './DBProtocol'
 import { Transaction } from 'sequelize'
 
 interface Params {
-  [key: string]: number | string;
+  [key: string]: number | string
 }
 
 /**
  * @description When a DBProtocol is defined, you can use DBTools for quick add/update/delete/search
  */
 export class DBTools {
-  private readonly _protocol: DBProtocol
+  private readonly _protocol: DBSpec
   public transaction!: Transaction
 
-  constructor(protocol: DBProtocol, transaction?: Transaction) {
-    this._protocol = protocol
+  constructor(protocol: DBProtocolV2 | DBSpec, transaction?: Transaction) {
+    this._protocol = protocol instanceof DBSpec ? protocol : new DBSpec(protocol)
     if (transaction) {
       this.transaction = transaction
     }
@@ -25,9 +25,8 @@ export class DBTools {
   }
 
   async weakAdd(params: Params) {
-    const primaryKey = this._protocol.primaryKey()
     const performer = this.makeAdder(params)
-    performer.setFixedKey(Array.isArray(primaryKey) ? primaryKey[0] : primaryKey)
+    performer.setFixedKey(this._protocol.primaryKey)
     performer.keepOldDataWhenDuplicate()
     await performer.execute()
   }
@@ -76,14 +75,10 @@ export class DBTools {
 
   public makeAdder(params: Params) {
     const protocol = this._protocol
-    const database = protocol.database()
-    const table = protocol.table()
-    const cols = protocol.insertableCols()
-
-    const builder = database.adder()
+    const builder = protocol.database.adder()
     builder.transaction = this.transaction
-    builder.setTable(table)
-    cols.forEach((col): void => {
+    builder.setTable(protocol.table)
+    protocol.insertableCols.forEach((col) => {
       const value = col in params ? params[col] : null
       builder.insertKV(col, value)
     })
@@ -92,20 +87,14 @@ export class DBTools {
 
   public makeModifier(params: Params) {
     const protocol = this._protocol
-    const database = protocol.database()
-    const table = protocol.table()
-    const cols = protocol.modifiableCols()
-
-    const builder = database.modifier()
+    const builder = protocol.database.modifier()
     builder.transaction = this.transaction
-    builder.setTable(table)
-    const pKey = protocol.primaryKey()
-    const pKeys = Array.isArray(pKey) ? pKey : [pKey]
-    pKeys.forEach((key): void => {
+    builder.setTable(protocol.table)
+    protocol.primaryKeys.forEach((key) => {
       builder.checkPrimaryKey(params, key)
       delete params[key]
     })
-    cols.forEach((col): void => {
+    protocol.modifiableCols.forEach((col) => {
       if (col in params) {
         builder.updateKV(col, params[col])
       }
@@ -115,15 +104,10 @@ export class DBTools {
 
   public makeRemover(params: Params) {
     const protocol = this._protocol
-    const database = protocol.database()
-    const table = protocol.table()
-
-    const builder = database.remover()
+    const builder = protocol.database.remover()
     builder.transaction = this.transaction
-    builder.setTable(table)
-    const pKey = protocol.primaryKey()
-    const pKeys = Array.isArray(pKey) ? pKey : [pKey]
-    pKeys.forEach((key): void => {
+    builder.setTable(protocol.table)
+    protocol.primaryKeys.forEach((key) => {
       builder.checkPrimaryKey(params, key)
     })
     return builder
@@ -131,19 +115,15 @@ export class DBTools {
 
   public makeSearcher(params: Params = {}) {
     const protocol = this._protocol
-    const database = protocol.database()
-    const table = protocol.table()
-    const cols = protocol.cols()
-
-    const builder = database.searcher()
+    const builder = protocol.database.searcher()
     builder.transaction = this.transaction
-    builder.setTable(table)
-    cols.forEach((col): void => {
+    builder.setTable(protocol.table)
+    protocol.cols.forEach((col) => {
       builder.addColumn(col)
     })
-    for (const key in params) {
+    Object.keys(params).forEach((key) => {
       builder.addConditionKV(key, params[key])
-    }
+    })
     return builder
   }
 }

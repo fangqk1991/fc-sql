@@ -3,15 +3,15 @@ import { SQLSearcher } from './SQLSearcher'
 import { Transaction } from 'sequelize'
 
 export interface DBColumn {
-  Field: string;
-  Type: string;
-  Collation: string;
-  Null: string;
-  Key: string;
-  Default: string | null;
-  Extra: string;
-  Privileges: string;
-  Comment: string;
+  Field: string
+  Type: string
+  Collation: string
+  Null: string
+  Key: string
+  Default: string | null
+  Extra: string
+  Privileges: string
+  Comment: string
 }
 
 export class DBTableHandler {

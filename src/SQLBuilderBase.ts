@@ -24,7 +24,7 @@ export abstract class SQLBuilderBase {
     return this
   }
 
-  checkPrimaryKey(params: { [key: string]: (string | number) }, key: string) {
+  checkPrimaryKey(params: { [key: string]: string | number }, key: string) {
     assert.ok(key in params, `${this.constructor.name}: primary key missing.`)
     this.addConditionKV(key, params[key])
     return this
@@ -47,7 +47,10 @@ export abstract class SQLBuilderBase {
    * @param args
    */
   addSpecialCondition(condition: string, ...args: (string | number)[]) {
-    assert.ok((condition.match(/\?/g) || []).length === args.length, `${this.constructor.name}: addSpecialCondition: Incorrect number of arguments.`)
+    assert.ok(
+      (condition.match(/\?/g) || []).length === args.length,
+      `${this.constructor.name}: addSpecialCondition: Incorrect number of arguments.`
+    )
     this.conditionColumns.push(`(${condition})`)
     this.conditionValues.push(...args)
     return this

@@ -1,8 +1,8 @@
 import { QueryTypes, Sequelize, Transaction } from 'sequelize'
-import { SQLSearcher } from "./SQLSearcher"
-import { SQLAdder } from "./SQLAdder"
+import { SQLSearcher } from './SQLSearcher'
+import { SQLAdder } from './SQLAdder'
 import { SQLModifier } from './SQLModifier'
-import { SQLRemover } from "./SQLRemover"
+import { SQLRemover } from './SQLRemover'
 import { Options } from 'sequelize'
 import * as moment from 'moment'
 import { TransactionRunner } from './TransactionRunner'
@@ -38,7 +38,11 @@ export class FCDatabase {
     return this._options.database as string
   }
 
-  async query(query: string, replacements: (string | number | null)[] = [], transaction: Transaction | null = null): Promise<{ [key: string]: any }[]> {
+  async query(
+    query: string,
+    replacements: (string | number | null)[] = [],
+    transaction: Transaction | null = null
+  ): Promise<{ [key: string]: any }[]> {
     const options: any = {
       replacements: replacements,
       type: QueryTypes.SELECT,
@@ -70,9 +74,13 @@ export class FCDatabase {
     return items as { [p: string]: number | string }[]
   }
 
-  public async update(query: string, replacements: (string | number | null)[] = [], transaction: Transaction | null = null): Promise<any> {
+  public async update(
+    query: string,
+    replacements: (string | number | null)[] = [],
+    transaction: Transaction | null = null
+  ): Promise<any> {
     const options: any = {
-      replacements: replacements
+      replacements: replacements,
     }
     if (transaction) {
       options['transaction'] = transaction

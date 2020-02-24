@@ -53,7 +53,7 @@ export class SQLSearcher extends SQLBuilderBase {
     }
     this._orderRules.push({
       sortKey: sortKey,
-      sortDirection: direction
+      sortDirection: direction,
     })
     this._orderStmts.push(...args)
     return this
@@ -101,21 +101,26 @@ export class SQLSearcher extends SQLBuilderBase {
   }
 
   _columnsDesc(): string {
-    return this._queryColumns.map((column: string): string => {
-      if (/[\(\)]/.test(column)) {
-        return column
-      }
-      const [keyStr, ...others]: string[] = column.trim().split(' ')
-      const formattedKeyStr = keyStr.split('.').map((item: string): string => {
-        const chars = item.replace(new RegExp('`', 'g'), '')
-        return /^[a-zA-Z0-9_]+$/.test(chars) ? `\`${chars}\`` : chars
-      }).join('.')
-      if (others.length > 0) {
-        const key = others.pop() as string
-        others.push(`\`${key.replace(new RegExp('`', 'g'), '')}\``)
-      }
-      return [formattedKeyStr, ...others].join(' ')
-    }).join(', ')
+    return this._queryColumns
+      .map((column: string): string => {
+        if (/[\(\)]/.test(column)) {
+          return column
+        }
+        const [keyStr, ...others]: string[] = column.trim().split(' ')
+        const formattedKeyStr = keyStr
+          .split('.')
+          .map((item: string): string => {
+            const chars = item.replace(new RegExp('`', 'g'), '')
+            return /^[a-zA-Z0-9_]+$/.test(chars) ? `\`${chars}\`` : chars
+          })
+          .join('.')
+        if (others.length > 0) {
+          const key = others.pop() as string
+          others.push(`\`${key.replace(new RegExp('`', 'g'), '')}\``)
+        }
+        return [formattedKeyStr, ...others].join(' ')
+      })
+      .join(', ')
   }
 
   public exportSQL() {
@@ -127,7 +132,7 @@ export class SQLSearcher extends SQLBuilderBase {
     if (conditions.length) {
       query = `${query} WHERE ${this.buildConditionStr()}`
     }
-    return {query: query, stmtValues: [...this.stmtValues()]}
+    return { query: query, stmtValues: [...this.stmtValues()] }
   }
 
   public async execute() {

@@ -4,7 +4,7 @@ import * as assert from 'assert'
 type Value = string | number | null
 
 interface InsertObject {
-  [p: string]: Value;
+  [p: string]: Value
 }
 
 /**

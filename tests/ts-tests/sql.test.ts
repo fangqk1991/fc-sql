@@ -1,5 +1,5 @@
-import { FCDatabase, SQLAdder, SQLBulkAdder, SQLModifier, SQLRemover, SQLSearcher } from "../../src"
-import * as assert from "assert"
+import { FCDatabase, SQLAdder, SQLBulkAdder, SQLModifier, SQLRemover, SQLSearcher } from '../../src'
+import * as assert from 'assert'
 
 const database = FCDatabase.getInstance()
 database.init({
@@ -184,7 +184,7 @@ describe('Test SQL', () => {
       searcher.setTable('demo_table')
       searcher.setColumns(['uid', 'key1', 'key2'])
       searcher.addConditionKV('uid', dataBefore['uid'])
-      assert.ok(await searcher.queryCount() === 0)
+      assert.ok((await searcher.queryCount()) === 0)
     }
 
     const countAfter = await globalSearcher.queryCount()
@@ -208,7 +208,7 @@ describe('Test SQL', () => {
         'demo_table.uid AS uid',
         'demo_table.key1 AS key1',
         'demo_table.key2 AS key2',
-        'CONCAT(demo_table.key1, demo_table.key2) AS full_name'
+        'CONCAT(demo_table.key1, demo_table.key2) AS full_name',
       ])
       const count = await searcher.queryCount()
       const items = await searcher.queryList()
@@ -243,8 +243,8 @@ describe('Test Timezone', (): void => {
         password: '',
         timezone: timezone,
         dialectOptions: {
-          dateStrings: true
-        }
+          dateStrings: true,
+        },
       })
       assert.ok((await database.timezone()) === timezone)
     }
