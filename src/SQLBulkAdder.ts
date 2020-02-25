@@ -1,5 +1,6 @@
 import { SQLBuilderBase } from './SQLBuilderBase'
 import * as assert from 'assert'
+import * as moment from 'moment'
 
 type Value = string | number | null
 
@@ -11,23 +12,47 @@ interface InsertObject {
  * @description Use for insert-sql
  */
 export class SQLBulkAdder extends SQLBuilderBase {
-  _insertKeys: string[] = []
-  _insertObjects: InsertObject[] = []
-  _updateWhenDuplicate = false
-  _keepOldDataWhenDuplicate = false
-  _fixedKey: string = ''
+  private _insertKeys: string[] = []
+  private _insertObjects: InsertObject[] = []
+  private _updateWhenDuplicate = false
+  private _keepOldDataWhenDuplicate = false
+  private _fixedKey: string = ''
+  private _timestampMap: { [p: string]: boolean } = {}
+  private _defaultValueForMissing: any = undefined
 
   public setInsertKeys(keys: string[]) {
     this._insertKeys = keys
     return this
   }
 
-  public putObject(obj: InsertObject) {
+  public declareTimestampKeys(...keys: string[]) {
+    for (const key of keys) {
+      this._timestampMap[key] = true
+    }
+  }
+
+  public setMissingValue(defaultValueForMissing: string | number | null) {
+    this._defaultValueForMissing = defaultValueForMissing
+  }
+
+  public putObject(data: { [p: string]: Value | Date }) {
+    const obj = { ...data }
     assert.ok(this._insertKeys.length > 0, `${this.constructor.name}: insertKeys missing.`)
-    this._insertKeys.forEach((key) => {
-      assert.ok(key in obj, `${this.constructor.name}: ${key} missing.`)
-    })
-    this._insertObjects.push(obj)
+    if (this._defaultValueForMissing !== undefined) {
+      this._insertKeys.forEach((key) => {
+        if (!(key in obj)) {
+          obj[key] = this._defaultValueForMissing
+        }
+      })
+    } else {
+      this._insertKeys.forEach((key) => {
+        assert.ok(key in obj, `${this.constructor.name}: ${key} missing.`)
+      })
+    }
+    for (const tsKey of Object.keys(this._timestampMap)) {
+      obj[tsKey] = moment(obj[tsKey] as any).unix()
+    }
+    this._insertObjects.push(obj as InsertObject)
     return this
   }
 
@@ -61,13 +86,16 @@ export class SQLBulkAdder extends SQLBuilderBase {
     this.checkTableValid()
     assert.ok(this._insertObjects.length > 0, `${this.constructor.name}: insertObjects missing.`)
 
-    const keys = this._insertKeys
+    const insertKeys = this._insertKeys
     const values = this.stmtValues()
 
-    const valuesDesc = `(${Array(keys.length)
-      .fill('?')
-      .join(', ')})`
-    let query = `INSERT INTO ${this.table}(${keys.join(', ')}) VALUES ${Array(this._insertObjects.length)
+    const quotes = []
+    for (const key of insertKeys) {
+      quotes.push(this._timestampMap[key] ? `FROM_UNIXTIME(?)` : '?')
+    }
+
+    const valuesDesc = `(${quotes.join(', ')})`
+    let query = `INSERT INTO ${this.table}(${insertKeys.join(', ')}) VALUES ${Array(this._insertObjects.length)
       .fill(valuesDesc)
       .join(', ')}`
     if (this._updateWhenDuplicate) {
