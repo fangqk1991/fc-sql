@@ -25,7 +25,7 @@ export class SQLBulkAdder extends SQLBuilderBase {
     return this
   }
 
-  public declareTimestampKeys(...keys: string[]) {
+  public declareTimestampKey(...keys: string[]) {
     for (const key of keys) {
       this._timestampMap[key] = true
     }
