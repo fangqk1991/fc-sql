@@ -7,13 +7,14 @@ export type OrderDirection = 'ASC' | 'DESC'
  * @description Use for select-sql
  */
 export class SQLSearcher extends SQLBuilderBase {
-  _queryColumns: string[] = []
-  _distinct: boolean = false
-  _offset: number = -1
-  _length: number = 1
-  _optionStr: string = ''
-  _orderRules: { sortKey: string; sortDirection: OrderDirection }[] = []
-  _orderStmts: (string | number)[] = []
+  private _queryColumns: string[] = []
+  private _distinct: boolean = false
+  private _offset: number = -1
+  private _length: number = 1
+  private _optionStr: string = ''
+  private _optionStmts: (string | number)[] = []
+  private _orderRules: { sortKey: string; sortDirection: OrderDirection }[] = []
+  private _orderStmts: (string | number)[] = []
 
   /**
    * @description As 'DISTINCT' in select-sql
@@ -89,9 +90,11 @@ export class SQLSearcher extends SQLBuilderBase {
   /**
    * @description Set option statement, such as 'GROUP BY ...'
    * @param optionStr
+   * @param args
    */
-  public setOptionStr(optionStr: string) {
+  public setOptionStr(optionStr: string, ...args: (string | number)[]) {
     this._optionStr = optionStr
+    this._optionStmts = args
     return this
   }
 
@@ -100,10 +103,10 @@ export class SQLSearcher extends SQLBuilderBase {
     return this
   }
 
-  _columnsDesc(): string {
+  private _columnsDesc(): string {
     return this._queryColumns
       .map((column: string): string => {
-        if (/[\(\)]/.test(column)) {
+        if (/[()]/.test(column)) {
           return column
         }
         const [keyStr, ...others]: string[] = column.trim().split(' ')
@@ -150,14 +153,13 @@ export class SQLSearcher extends SQLBuilderBase {
     if (this._optionStr) {
       query = `${query} ${this._optionStr}`
     }
+    stmtValues.push(...this._optionStmts)
 
     if (this._orderRules.length) {
       const orderItems = this._orderRules.map((rule): string => `${rule.sortKey} ${rule.sortDirection}`)
       query = `${query} ORDER BY ${orderItems.join(', ')}`
     }
-    if (this._orderStmts.length) {
-      stmtValues.push(...this._orderStmts)
-    }
+    stmtValues.push(...this._orderStmts)
 
     if (this._offset >= 0 && this._length > 0) {
       query = `${query} LIMIT ${this._offset}, ${this._length}`

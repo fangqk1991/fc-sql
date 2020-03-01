@@ -19,12 +19,12 @@ export abstract class SQLBuilderBase {
    * @description Set sql-table
    * @param table
    */
-  setTable(table: string) {
+  public setTable(table: string) {
     this.table = table
     return this
   }
 
-  checkPrimaryKey(params: { [key: string]: string | number }, key: string) {
+  public checkPrimaryKey(params: { [key: string]: string | number }, key: string) {
     assert.ok(key in params, `${this.constructor.name}: primary key missing.`)
     this.addConditionKV(key, params[key])
     return this
@@ -35,7 +35,7 @@ export abstract class SQLBuilderBase {
    * @param key {string}
    * @param value {string | number}
    */
-  addConditionKV(key: string, value: string | number) {
+  public addConditionKV(key: string, value: string | number) {
     this.conditionColumns.push(`(${key} = ?)`)
     this.conditionValues.push(value)
     return this
@@ -46,13 +46,28 @@ export abstract class SQLBuilderBase {
    * @param condition {string}
    * @param args
    */
-  addSpecialCondition(condition: string, ...args: (string | number)[]) {
+  public addSpecialCondition(condition: string, ...args: (string | number)[]) {
     assert.ok(
       (condition.match(/\?/g) || []).length === args.length,
       `${this.constructor.name}: addSpecialCondition: Incorrect number of arguments.`
     )
     this.conditionColumns.push(`(${condition})`)
     this.conditionValues.push(...args)
+    return this
+  }
+
+  public addConditionKeyInSet(key: string, ...values: string[]) {
+    if (values.length === 0) {
+      this.addSpecialCondition('1 = 0')
+      return this
+    }
+    const quotes = Array(values.length)
+      .fill('?')
+      .join(', ')
+    if (/^\w+$/.test(key)) {
+      key = `\`${key}\``
+    }
+    this.addSpecialCondition(`${key} IN (${quotes})`, ...values)
     return this
   }
 
