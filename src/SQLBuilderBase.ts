@@ -36,6 +36,9 @@ export abstract class SQLBuilderBase {
    * @param value {string | number}
    */
   public addConditionKV(key: string, value: string | number) {
+    if (/^\w+$/.test(key)) {
+      key = `\`${key}\``
+    }
     this.conditionColumns.push(`(${key} = ?)`)
     this.conditionValues.push(value)
     return this
@@ -56,7 +59,7 @@ export abstract class SQLBuilderBase {
     return this
   }
 
-  public addConditionKeyInSet(key: string, ...values: string[]) {
+  public addConditionKeyInSet(key: string, ...values: (string | number)[]) {
     if (values.length === 0) {
       this.addSpecialCondition('1 = 0')
       return this
