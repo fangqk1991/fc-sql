@@ -50,7 +50,7 @@ export class SQLBulkAdder extends SQLBuilderBase {
       })
     }
     for (const tsKey of Object.keys(this._timestampMap)) {
-      obj[tsKey] = moment(obj[tsKey] as any).unix()
+      obj[tsKey] = moment(obj[tsKey] as any).unix() || 1
     }
     this._insertObjects.push(obj as InsertObject)
     return this

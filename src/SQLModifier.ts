@@ -21,8 +21,13 @@ export class SQLModifier extends SQLBuilderBase {
   }
 
   public updateKVForTimestamp(key: string, value: Date | string | any) {
-    this._updateColumns.push(`\`${key}\` = FROM_UNIXTIME(?)`)
-    this._updateValues.push(moment(value).unix())
+    const tsValue = moment(value).unix() || null
+    if (tsValue) {
+      this._updateColumns.push(`\`${key}\` = FROM_UNIXTIME(?)`)
+      this._updateValues.push(tsValue)
+    } else {
+      this.updateKV(key, null)
+    }
     return this
   }
 

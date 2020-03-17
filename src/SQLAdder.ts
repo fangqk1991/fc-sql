@@ -25,8 +25,13 @@ export class SQLAdder extends SQLBuilderBase {
   }
 
   public insertKVForTimestamp(key: string, value: Date | string | any) {
-    this._timestampMap[key] = true
-    this.insertKV(key, moment(value).unix())
+    const tsValue = moment(value).unix() || null
+    if (tsValue) {
+      this._timestampMap[key] = true
+      this.insertKV(key, tsValue)
+    } else {
+      this.insertKV(key, null)
+    }
     return this
   }
 
