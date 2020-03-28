@@ -106,4 +106,13 @@ export class DBSpec implements DBProtocolV2 {
   public modifiableCols() {
     return [...this._modifiableCols]
   }
+
+  public formattedCols() {
+    this.cols().map((column: string): string => {
+      if (/^\w+$/.test(column)) {
+        return `\`${this.table}\`.\`${column}\` AS \`${column}\``
+      }
+      return column
+    })
+  }
 }
