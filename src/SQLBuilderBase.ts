@@ -50,12 +50,16 @@ export abstract class SQLBuilderBase {
    * @param args
    */
   public addSpecialCondition(condition: string, ...args: (string | number)[]) {
+    this._addSpecialCondition(condition, args)
+  }
+
+  private _addSpecialCondition(condition: string, args: (string | number)[]) {
     assert.ok(
       (condition.match(/\?/g) || []).length === args.length,
       `${this.constructor.name}: addSpecialCondition: Incorrect number of arguments.`
     )
     this.conditionColumns.push(`(${condition})`)
-    this.conditionValues.push(...args)
+    this.conditionValues = this.conditionValues.concat(args)
     return this
   }
 
@@ -70,7 +74,7 @@ export abstract class SQLBuilderBase {
     if (/^\w+$/.test(key)) {
       key = `\`${key}\``
     }
-    this.addSpecialCondition(`${key} IN (${quotes})`, ...values)
+    this._addSpecialCondition(`${key} IN (${quotes})`, values)
     return this
   }
 
