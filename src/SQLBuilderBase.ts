@@ -50,7 +50,7 @@ export abstract class SQLBuilderBase {
    * @param args
    */
   public addSpecialCondition(condition: string, ...args: (string | number)[]) {
-    this._addSpecialCondition(condition, args)
+    return this._addSpecialCondition(condition, args)
   }
 
   private _addSpecialCondition(condition: string, args: (string | number)[]) {
