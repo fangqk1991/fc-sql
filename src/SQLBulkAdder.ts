@@ -84,7 +84,9 @@ export class SQLBulkAdder extends SQLBuilderBase {
 
   public async execute() {
     this.checkTableValid()
-    assert.ok(this._insertObjects.length > 0, `${this.constructor.name}: insertObjects missing.`)
+    if (this._insertObjects.length === 0) {
+      return
+    }
 
     const insertKeys = this._insertKeys
     const values = this.stmtValues()
