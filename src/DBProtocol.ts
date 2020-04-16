@@ -65,6 +65,11 @@ export interface DBProtocolV2 {
    * @description When an update-sql execute, only columns in modifiableCols() will be used.
    */
   modifiableCols?: string[] | (() => string[])
+
+  /**
+   * @description Declare timestamp type columns.
+   */
+  timestampTypeCols?: string[] | (() => string[])
 }
 
 export class DBSpec implements DBProtocolV2 {
@@ -75,6 +80,8 @@ export class DBSpec implements DBProtocolV2 {
   private readonly _cols!: string[]
   private readonly _insertableCols!: string[]
   private readonly _modifiableCols!: string[]
+  private readonly _timestampTypeCols: string[] = []
+  private readonly _timestampMap: { [p: string]: boolean } = {}
 
   constructor(protocol: DBProtocol | DBProtocolV2) {
     this.database = protocol.database instanceof Function ? protocol.database() : protocol.database
@@ -89,6 +96,20 @@ export class DBSpec implements DBProtocolV2 {
     const modifiableCols =
       protocol.modifiableCols instanceof Function ? protocol.modifiableCols() : protocol.modifiableCols
     this._modifiableCols = modifiableCols || []
+    {
+      this._timestampMap = {}
+      const protocolV2 = protocol as DBProtocolV2
+      if (protocolV2.timestampTypeCols) {
+        const timestampTypeCols =
+          protocolV2.timestampTypeCols instanceof Function
+            ? protocolV2.timestampTypeCols()
+            : protocolV2.timestampTypeCols
+        this._timestampTypeCols = timestampTypeCols || []
+        for (const key of this._timestampTypeCols) {
+          this._timestampMap[key] = true
+        }
+      }
+    }
   }
 
   public primaryKeys() {
@@ -105,6 +126,14 @@ export class DBSpec implements DBProtocolV2 {
 
   public modifiableCols() {
     return [...this._modifiableCols]
+  }
+
+  public timestampTypeCols() {
+    return [...this._timestampTypeCols]
+  }
+
+  public checkTimestampKey(key: string) {
+    return key in this._timestampMap
   }
 
   public formattedCols() {

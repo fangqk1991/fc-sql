@@ -80,7 +80,11 @@ export class DBTools {
     builder.setTable(protocol.table)
     protocol.insertableCols().forEach((col) => {
       const value = col in params ? params[col] : null
-      builder.insertKV(col, value)
+      if (this._protocol.checkTimestampKey(col)) {
+        builder.insertKVForTimestamp(col, value)
+      } else {
+        builder.insertKV(col, value)
+      }
     })
     return builder
   }
@@ -96,7 +100,11 @@ export class DBTools {
     })
     protocol.modifiableCols().forEach((col) => {
       if (col in params) {
-        builder.updateKV(col, params[col])
+        if (this._protocol.checkTimestampKey(col)) {
+          builder.updateKVForTimestamp(col, params[col])
+        } else {
+          builder.updateKV(col, params[col])
+        }
       }
     })
     return builder
