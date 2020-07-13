@@ -1,7 +1,6 @@
-import { FCDatabase, SQLAdder, SQLModifier, SQLRemover, SQLSearcher } from "../../src"
+import { FCDatabase, NextAction, SQLAdder, SQLModifier, SQLRemover, SQLSearcher } from '../src'
 import * as assert from 'assert'
 import { Transaction } from 'sequelize'
-import { NextAction } from '../../src'
 
 const database = FCDatabase.getInstance()
 database.init({
@@ -74,7 +73,7 @@ describe('Test TransactionRunner', () => {
     await transactionRunner.commit(async (transaction) => {
       const nextActions: NextAction[] = []
       for (let i = 0; i < count; ++i) {
-        console.log(`Fake operation: Index - ${i}`)
+        console.info(`Fake operation: Index - ${i}`)
         const adder = new SQLAdder(database)
         adder.transaction = transaction
         adder.setTable('demo_table_2')
@@ -82,7 +81,7 @@ describe('Test TransactionRunner', () => {
         adder.insertKV('key2', `K2 - ${Math.random()}`)
         const uid = await adder.execute()
         nextActions.push(async () => {
-          console.log(`After transaction committed: [uid: ${uid}]`)
+          console.info(`After transaction committed: [uid: ${uid}]`)
           assert.ok(uid > 0)
         })
 

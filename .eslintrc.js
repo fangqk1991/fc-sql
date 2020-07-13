@@ -34,7 +34,7 @@ module.exports = {
     "@typescript-eslint/no-object-literal-type-assertion": "off",
     "@typescript-eslint/no-this-alias": "off",
     "@typescript-eslint/no-inferrable-types": "off",
-    "no-console": ["error", { allow: ["error"] }],
+    // "no-console": ["error", { allow: ["error"] }],
     "no-empty": "off",
     "require-atomic-updates": "off"
   }
