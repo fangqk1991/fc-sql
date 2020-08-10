@@ -22,6 +22,10 @@ export class TransactionRunner {
       }
     } catch (e) {
       console.error(`TransactionRunner: Catch an error "${e.message}", transaction rollback`)
+      if (e.sql) {
+        console.error(`Error SQL: ${e.sql}`)
+      }
+      console.error(e)
       await transaction.rollback()
       throw e
     }
