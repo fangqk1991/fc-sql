@@ -161,7 +161,7 @@ export class SQLSearcher extends SQLBuilderBase {
     }
     stmtValues.push(...this._orderStmts)
 
-    if (this._offset >= 0 && this._length > 0) {
+    if (this._offset >= 0 && this._length >= 0) {
       query = `${query} LIMIT ${this._offset}, ${this._length}`
     }
 
