@@ -78,12 +78,10 @@ export class SQLSearcher extends SQLBuilderBase {
 
   /**
    * @description Set limit info, pass offset and length
-   * @param offset {string}
-   * @param length {string}
    */
   public setLimitInfo(offset: number, length: number) {
-    this._offset = offset
-    this._length = length
+    this._offset = Number(offset)
+    this._length = Number(length)
     return this
   }
 
@@ -146,6 +144,9 @@ export class SQLSearcher extends SQLBuilderBase {
    * @description Execute it after preparing table, columns, conditions, get the record-list.
    */
   public async queryList() {
+    if (this._length <= 0) {
+      return [] as { [p: string]: any }[]
+    }
     const data = this.exportSQL()
     let query = data.query
     const stmtValues = data.stmtValues
