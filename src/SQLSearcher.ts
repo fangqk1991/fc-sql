@@ -144,7 +144,7 @@ export class SQLSearcher extends SQLBuilderBase {
    * @description Execute it after preparing table, columns, conditions, get the record-list.
    */
   public async queryList() {
-    if (this._length <= 0) {
+    if (this._length === 0) {
       return [] as { [p: string]: any }[]
     }
     const data = this.exportSQL()
