@@ -63,14 +63,22 @@ export abstract class SQLBuilderBase {
     return this
   }
 
+  /**
+   * @deprecated Please use addConditionKeyInArray instead.
+   * @param key
+   * @param values
+   */
   public addConditionKeyInSet(key: string, ...values: (string | number)[]) {
+    this.addConditionKeyInArray(key, values)
+    return this
+  }
+
+  public addConditionKeyInArray(key: string, values: (string | number)[]) {
     if (values.length === 0) {
       this.addSpecialCondition('1 = 0')
       return this
     }
-    const quotes = Array(values.length)
-      .fill('?')
-      .join(', ')
+    const quotes = Array(values.length).fill('?').join(', ')
     if (/^\w+$/.test(key)) {
       key = `\`${key}\``
     }
