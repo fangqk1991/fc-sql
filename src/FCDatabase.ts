@@ -123,4 +123,9 @@ export class FCDatabase {
     const result = await this.query(`SHOW VARIABLES LIKE "time_zone"`)
     return result[0]['Value']
   }
+
+  public async ping() {
+    await this.query('SELECT 1')
+    return 'PONG'
+  }
 }
