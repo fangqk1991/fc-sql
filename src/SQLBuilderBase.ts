@@ -88,7 +88,7 @@ export abstract class SQLBuilderBase {
 
   public addConditionKeyNotInArray(key: string, values: (string | number)[]) {
     if (values.length === 0) {
-      this.addSpecialCondition('1 = 0')
+      this.addSpecialCondition('1 = 1')
       return this
     }
     const quotes = Array(values.length).fill('?').join(', ')
