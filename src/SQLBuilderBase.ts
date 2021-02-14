@@ -86,6 +86,19 @@ export abstract class SQLBuilderBase {
     return this
   }
 
+  public addConditionKeyNotInArray(key: string, values: (string | number)[]) {
+    if (values.length === 0) {
+      this.addSpecialCondition('1 = 0')
+      return this
+    }
+    const quotes = Array(values.length).fill('?').join(', ')
+    if (/^\w+$/.test(key)) {
+      key = `\`${key}\``
+    }
+    this._addSpecialCondition(`${key} NOT IN (${quotes})`, values)
+    return this
+  }
+
   conditions(): string[] {
     return this.conditionColumns
   }
