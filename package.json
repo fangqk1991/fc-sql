@@ -34,9 +34,9 @@
     "typescript": "^3.9.6"
   },
   "dependencies": {
-    "sequelize": ">=4",
     "moment": "^2.24.0",
     "mysql2": "^1.7.0",
+    "sequelize": ">=4",
     "tslib": "^1.10.0"
   },
   "prettier": {
