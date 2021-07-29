@@ -1,9 +1,12 @@
-import { SQLRemover, SQLSearcher } from '../src'
+import { FCDatabase, SQLRemover, SQLSearcher } from '../src'
 import * as assert from 'assert'
 import { demoDatabase, fetchRecordCount, generateRecords, getOneRecord } from './DemoHelper'
 
 describe('Test SQL', () => {
   it(`Test FCDatabase`, async () => {
+    FCDatabase.instanceWithName('xx')
+    FCDatabase.getInstance()
+
     await demoDatabase.update('DELETE FROM demo_table')
 
     {

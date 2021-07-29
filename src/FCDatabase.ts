@@ -15,10 +15,7 @@ export class FCDatabase<T extends SequelizeProtocol = Sequelize> {
   private __theDatabase?: T
   private _options!: Options
 
-  public static instanceWithName<T extends SequelizeProtocol = Sequelize>(
-    this: { new (): T },
-    name: string
-  ): FCDatabase<T> {
+  public static instanceWithName<T extends SequelizeProtocol = Sequelize>(name: string): FCDatabase<T> {
     let obj = null
     if (name in _instanceMap && _instanceMap[name] instanceof FCDatabase) {
       obj = _instanceMap[name]
