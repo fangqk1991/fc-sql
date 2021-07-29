@@ -1,18 +1,19 @@
-import { QueryTypes, Sequelize, Transaction } from 'sequelize'
+import { Options, QueryTypes, Sequelize, Transaction } from 'sequelize'
 import { SQLSearcher } from './SQLSearcher'
 import { SQLAdder } from './SQLAdder'
 import { SQLModifier } from './SQLModifier'
 import { SQLRemover } from './SQLRemover'
-import { Options } from 'sequelize'
 import * as moment from 'moment'
 import { TransactionRunner } from './TransactionRunner'
 import { DBTableHandler } from './DBTableHandler'
+import { QueryOptionsWithType } from 'sequelize/types/lib/query-interface'
+import { SequelizeProtocol } from './SequelizeProtocol'
 
 const _instanceMap: { [key: string]: FCDatabase } = {}
 
-export class FCDatabase {
-  __theDatabase?: Sequelize
-  _options!: Options
+export class FCDatabase<T extends SequelizeProtocol = Sequelize> {
+  private __theDatabase?: T
+  private _options!: Options
 
   public static instanceWithName(name: string): FCDatabase {
     let obj = null
@@ -43,13 +44,13 @@ export class FCDatabase {
     replacements: (string | number | null)[] = [],
     transaction: Transaction | null = null
   ): Promise<{ [key: string]: any }[]> {
-    const options: any = {
+    const options: Partial<QueryOptionsWithType<QueryTypes>> = {
       replacements: replacements,
       type: QueryTypes.SELECT,
       raw: true,
     }
     if (transaction) {
-      options['transaction'] = transaction
+      options.transaction = transaction
     }
     const items = (await this._db().query(query, options)) as any[]
     if (items.length > 0) {
@@ -79,44 +80,48 @@ export class FCDatabase {
     replacements: (string | number | null)[] = [],
     transaction: Transaction | null = null
   ): Promise<any> {
-    const options: any = {
+    const options: Partial<QueryOptionsWithType<QueryTypes>> = {
       replacements: replacements,
     }
     if (transaction) {
-      options['transaction'] = transaction
+      options.transaction = transaction
     }
     return this._db().query(query, options)
   }
 
-  private _db() {
+  public setSequelizeProtocol(protocol: T) {
+    this.__theDatabase = protocol
+  }
+
+  public _db(): T {
     if (!this.__theDatabase) {
-      this.__theDatabase = new Sequelize(this._options)
+      this.__theDatabase = new Sequelize(this._options) as any as T
     }
     return this.__theDatabase
   }
 
   public searcher() {
-    return new SQLSearcher(this)
+    return new SQLSearcher(this as any as FCDatabase)
   }
 
   public adder() {
-    return new SQLAdder(this)
+    return new SQLAdder(this as any as FCDatabase)
   }
 
   public modifier() {
-    return new SQLModifier(this)
+    return new SQLModifier(this as any as FCDatabase)
   }
 
   public remover() {
-    return new SQLRemover(this)
+    return new SQLRemover(this as any as FCDatabase)
   }
 
   public tableHandler(tableName: string) {
-    return new DBTableHandler(this, tableName)
+    return new DBTableHandler(this as any as FCDatabase, tableName)
   }
 
-  public createTransactionRunner() {
-    return new TransactionRunner(this)
+  public createTransactionRunner(): TransactionRunner {
+    return new TransactionRunner(this as any as FCDatabase)
   }
 
   public async timezone() {
