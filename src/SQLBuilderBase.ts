@@ -99,20 +99,20 @@ export abstract class SQLBuilderBase {
     return this
   }
 
-  conditions(): string[] {
+  public conditions(): string[] {
     return this.conditionColumns
   }
 
-  stmtValues(): (string | number | null)[] {
+  public stmtValues(): (string | number | null)[] {
     return this.conditionValues
   }
 
-  checkTableValid() {
+  public checkTableValid() {
     assert.ok(!!this.table, `${this.constructor.name}: table missing.`)
     return this
   }
 
-  buildConditionStr(): string {
+  public buildConditionStr() {
     return this.conditions().join(' AND ')
   }
 }

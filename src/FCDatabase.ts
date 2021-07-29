@@ -14,7 +14,7 @@ export class FCDatabase {
   __theDatabase?: Sequelize
   _options!: Options
 
-  static instanceWithName(name: string): FCDatabase {
+  public static instanceWithName(name: string): FCDatabase {
     let obj = null
     if (name in _instanceMap && _instanceMap[name] instanceof FCDatabase) {
       obj = _instanceMap[name]
@@ -26,19 +26,19 @@ export class FCDatabase {
     return obj
   }
 
-  static getInstance(): FCDatabase {
+  public static getInstance(): FCDatabase {
     return FCDatabase.instanceWithName('default')
   }
 
-  init(options: Options): void {
+  public init(options: Options): void {
     this._options = options
   }
 
-  dbName() {
+  public dbName() {
     return this._options.database as string
   }
 
-  async query(
+  public async query(
     query: string,
     replacements: (string | number | null)[] = [],
     transaction: Transaction | null = null
@@ -88,30 +88,30 @@ export class FCDatabase {
     return this._db().query(query, options)
   }
 
-  _db(): Sequelize {
+  private _db() {
     if (!this.__theDatabase) {
       this.__theDatabase = new Sequelize(this._options)
     }
     return this.__theDatabase
   }
 
-  searcher(): SQLSearcher {
+  public searcher() {
     return new SQLSearcher(this)
   }
 
-  adder(): SQLAdder {
+  public adder() {
     return new SQLAdder(this)
   }
 
-  modifier(): SQLModifier {
+  public modifier() {
     return new SQLModifier(this)
   }
 
-  remover(): SQLRemover {
+  public remover() {
     return new SQLRemover(this)
   }
 
-  public tableHandler(tableName: string): DBTableHandler {
+  public tableHandler(tableName: string) {
     return new DBTableHandler(this, tableName)
   }
 
@@ -119,7 +119,7 @@ export class FCDatabase {
     return new TransactionRunner(this)
   }
 
-  async timezone() {
+  public async timezone() {
     const result = await this.query(`SHOW VARIABLES LIKE "time_zone"`)
     return result[0]['Value']
   }
