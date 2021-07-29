@@ -9,30 +9,33 @@ import { DBTableHandler } from './DBTableHandler'
 import { QueryOptionsWithType } from 'sequelize/types/lib/query-interface'
 import { SequelizeProtocol } from './SequelizeProtocol'
 
-const _instanceMap: { [key: string]: FCDatabase } = {}
+const _instanceMap: { [key: string]: any } = {}
 
 export class FCDatabase<T extends SequelizeProtocol = Sequelize> {
   private __theDatabase?: T
   private _options!: Options
 
-  public static instanceWithName(name: string): FCDatabase {
+  public static instanceWithName<T extends SequelizeProtocol = Sequelize>(
+    this: { new (): T },
+    name: string
+  ): FCDatabase<T> {
     let obj = null
     if (name in _instanceMap && _instanceMap[name] instanceof FCDatabase) {
       obj = _instanceMap[name]
     } else {
-      obj = new FCDatabase()
+      obj = new this()
       _instanceMap[name] = obj
     }
-
     return obj
   }
 
-  public static getInstance(): FCDatabase {
-    return FCDatabase.instanceWithName('default')
+  public static getInstance<T extends SequelizeProtocol = Sequelize>(): FCDatabase<T> {
+    return (this as any).instanceWithName('default')
   }
 
-  public init(options: Options): void {
+  public init(options: Options) {
     this._options = options
+    return this
   }
 
   public dbName() {
