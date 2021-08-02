@@ -17,6 +17,11 @@ export interface DBProtocolV2 {
   primaryKey: string | string[] | (() => string | string[])
 
   /**
+   * @description Table's AUTO_INCREMENT key.
+   */
+  autoIncrementKey?: string
+
+  /**
    * @description Table's columns, pass the column name list which you show.
    */
   cols: string[] | (() => string[])
