@@ -46,6 +46,7 @@ export class DBSpec implements DBProtocolV2 {
   public readonly database!: FCDatabase
   public readonly table!: string
   public readonly primaryKey!: string
+  public readonly autoIncrementKey!: string
   private readonly _primaryKeys!: string[]
   private readonly _cols!: string[]
   private readonly _insertableCols!: string[]
@@ -66,6 +67,7 @@ export class DBSpec implements DBProtocolV2 {
     const modifiableCols =
       protocol.modifiableCols instanceof Function ? protocol.modifiableCols() : protocol.modifiableCols
     this._modifiableCols = modifiableCols || []
+    this.autoIncrementKey = protocol.autoIncrementKey || ''
     {
       this._timestampMap = {}
       const protocolV2 = protocol
