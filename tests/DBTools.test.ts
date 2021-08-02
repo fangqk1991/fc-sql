@@ -1,4 +1,4 @@
-import { DBProtocol, DBProtocolV2, DBTools, FCDatabase, SQLSearcher } from '../src'
+import { DBProtocolV2, DBTools, FCDatabase, SQLSearcher } from '../src'
 import * as assert from 'assert'
 import { demoDatabase, fetchRecordCount, generateRecords } from './DemoHelper'
 
@@ -14,7 +14,7 @@ database.init({
   // logging: false,
 })
 
-class MyProtocol implements DBProtocol {
+class MyProtocol implements DBProtocolV2 {
   database(): FCDatabase {
     return database
   }
