@@ -157,7 +157,13 @@ export class SQLSearcher extends SQLBuilderBase {
     stmtValues.push(...this._optionStmts)
 
     if (this._orderRules.length) {
-      const orderItems = this._orderRules.map((rule): string => `${rule.sortKey} ${rule.sortDirection}`)
+      const orderItems = this._orderRules.map((rule): string => {
+        let key = rule.sortKey
+        if (/^\w+$/.test(key)) {
+          key = `\`${key}\``
+        }
+        return `${key} ${rule.sortDirection}`
+      })
       query = `${query} ORDER BY ${orderItems.join(', ')}`
     }
     stmtValues.push(...this._orderStmts)
