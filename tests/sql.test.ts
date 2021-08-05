@@ -7,6 +7,7 @@ describe('Test SQL', () => {
     FCDatabase.instanceWithName('xx')
     FCDatabase.getInstance()
 
+    await demoDatabase.ping()
     await demoDatabase.update('DELETE FROM demo_table')
 
     {
