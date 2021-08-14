@@ -168,4 +168,8 @@ describe('Test SQL', () => {
       await transaction.rollback()
     }
   })
+
+  it(`Test getTables`, async () => {
+    console.info(await demoDatabase.getTables())
+  })
 })

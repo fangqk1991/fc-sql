@@ -95,33 +95,33 @@ export class FCDatabase<T extends SequelizeProtocol = Sequelize> {
 
   public _db(): T {
     if (!this.__theDatabase) {
-      this.__theDatabase = (new Sequelize(this._options) as any) as T
+      this.__theDatabase = new Sequelize(this._options) as any as T
     }
     return this.__theDatabase
   }
 
   public searcher() {
-    return new SQLSearcher((this as any) as FCDatabase)
+    return new SQLSearcher(this as any as FCDatabase)
   }
 
   public adder() {
-    return new SQLAdder((this as any) as FCDatabase)
+    return new SQLAdder(this as any as FCDatabase)
   }
 
   public modifier() {
-    return new SQLModifier((this as any) as FCDatabase)
+    return new SQLModifier(this as any as FCDatabase)
   }
 
   public remover() {
-    return new SQLRemover((this as any) as FCDatabase)
+    return new SQLRemover(this as any as FCDatabase)
   }
 
   public tableHandler(tableName: string) {
-    return new DBTableHandler((this as any) as FCDatabase, tableName)
+    return new DBTableHandler(this as any as FCDatabase, tableName)
   }
 
   public createTransactionRunner(): TransactionRunner {
-    return new TransactionRunner((this as any) as FCDatabase)
+    return new TransactionRunner(this as any as FCDatabase)
   }
 
   public async timezone() {
@@ -134,5 +134,10 @@ export class FCDatabase<T extends SequelizeProtocol = Sequelize> {
       throw new Error(`[${this._options?.username} -> ${this._options?.database}] ${err.message}`)
     })
     return 'PONG'
+  }
+
+  public async getTables() {
+    const items = await this.query('SHOW TABLES')
+    return items.map((item) => item[`Tables_in_${this.dbName()}`]) as string[]
   }
 }
