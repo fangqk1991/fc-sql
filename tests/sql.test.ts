@@ -139,6 +139,13 @@ describe('Test SQL', () => {
     }
   })
 
+  it(`Test _columnsDesc`, async () => {
+    const searcher = new SQLSearcher(demoDatabase)
+    searcher.setTable('demo_table')
+    searcher.setColumns(['uid AS `a uid`'])
+    await searcher.queryList()
+  })
+
   it(`Test setOptionStr`, async () => {
     const searcher = new SQLSearcher(demoDatabase)
     searcher.setTable('demo_table')

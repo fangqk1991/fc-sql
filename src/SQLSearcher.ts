@@ -115,7 +115,7 @@ export class SQLSearcher extends SQLBuilderBase {
             return /^[a-zA-Z0-9_]+$/.test(chars) ? `\`${chars}\`` : chars
           })
           .join('.')
-        if (others.length > 0) {
+        if (others.length > 0 && !others[others.length - 1].includes('`')) {
           const key = others.pop() as string
           others.push(`\`${key.replace(new RegExp('`', 'g'), '')}\``)
         }
