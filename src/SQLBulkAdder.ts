@@ -90,7 +90,7 @@ export class SQLBulkAdder extends SQLBuilderBase {
 
     const insertKeys = this._insertKeys
     const wrappedKeys = insertKeys.map((key) => {
-      return key.includes('`') ? key : `${key}`
+      return key.includes('`') ? key : `\`${key}\``
     })
     const values = this.stmtValues()
     const quotes: string[] = []
