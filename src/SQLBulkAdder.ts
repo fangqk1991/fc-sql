@@ -89,15 +89,17 @@ export class SQLBulkAdder extends SQLBuilderBase {
     }
 
     const insertKeys = this._insertKeys
+    const wrappedKeys = insertKeys.map((key) => {
+      return key.includes('`') ? key : `${key}`
+    })
     const values = this.stmtValues()
-
-    const quotes = []
+    const quotes: string[] = []
     for (const key of insertKeys) {
       quotes.push(this._timestampMap[key] ? `FROM_UNIXTIME(?)` : '?')
     }
 
     const valuesDesc = `(${quotes.join(', ')})`
-    let query = `INSERT INTO ${this.table}(${insertKeys.join(', ')}) VALUES ${Array(this._insertObjects.length)
+    let query = `INSERT INTO ${this.table}(${wrappedKeys.join(', ')}) VALUES ${Array(this._insertObjects.length)
       .fill(valuesDesc)
       .join(', ')}`
     if (this._updateWhenDuplicate) {
