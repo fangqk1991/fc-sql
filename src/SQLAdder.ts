@@ -1,6 +1,7 @@
 import { SQLBuilderBase } from './SQLBuilderBase'
 import * as assert from 'assert'
 import * as moment from 'moment'
+import { CommonFuncs } from './CommonFuncs'
 
 /**
  * @description Use for insert-sql
@@ -64,24 +65,24 @@ export class SQLAdder extends SQLBuilderBase {
     assert.ok(this._insertKeys.length > 0, `${this.constructor.name}: insertKeys missing.`)
     assert.ok(keys.length === values.length, `${this.constructor.name}: the length of keys and values is not equal.`)
 
-    const keys2 = []
-    const values2 = []
-    const quotes = []
+    const wrappedKeys: string[] = []
+    const values2: any[] = []
+    const quotes: string[] = []
     for (let i = 0; i < values.length; ++i) {
       if (values[i] !== null && values[i] !== undefined) {
-        keys2.push(`\`${keys[i]}\``)
+        wrappedKeys.push(CommonFuncs.wrapColumn(keys[i]))
         values2.push(values[i])
         quotes.push(this._timestampMap[keys[i]] ? `FROM_UNIXTIME(?)` : '?')
       }
     }
 
     if (this.transaction) {
-      let query = `INSERT INTO ${this.table}(${keys2.join(', ')}) VALUES (${quotes.join(', ')})`
+      let query = `INSERT INTO ${this.table}(${wrappedKeys.join(', ')}) VALUES (${quotes.join(', ')})`
       if (this._updateWhenDuplicate) {
-        const additionItems = keys2.map((key) => `${key} = VALUES(${key})`)
+        const additionItems = wrappedKeys.map((key) => `${key} = VALUES(${key})`)
         query = `${query} ON DUPLICATE KEY UPDATE ${additionItems.join(', ')}`
       } else if (this._keepOldDataWhenDuplicate) {
-        const key = this._fixedKey
+        const key = CommonFuncs.wrapColumn(this._fixedKey)
         query = `${query} ON DUPLICATE KEY UPDATE ${key} = VALUES(${key})`
       }
       await this.database.update(query, values2, this.transaction)

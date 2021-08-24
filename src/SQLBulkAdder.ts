@@ -1,6 +1,7 @@
 import { SQLBuilderBase } from './SQLBuilderBase'
 import * as assert from 'assert'
 import * as moment from 'moment'
+import { CommonFuncs } from './CommonFuncs'
 
 type Value = string | number | null
 
@@ -89,9 +90,7 @@ export class SQLBulkAdder extends SQLBuilderBase {
     }
 
     const insertKeys = this._insertKeys
-    const wrappedKeys = insertKeys.map((key) => {
-      return key.includes('`') ? key : `\`${key}\``
-    })
+    const wrappedKeys = insertKeys.map((key) => CommonFuncs.wrapColumn(key))
     const values = this.stmtValues()
     const quotes: string[] = []
     for (const key of insertKeys) {
@@ -103,10 +102,10 @@ export class SQLBulkAdder extends SQLBuilderBase {
       .fill(valuesDesc)
       .join(', ')}`
     if (this._updateWhenDuplicate) {
-      const additionItems = this._insertKeys.map((key) => `${key} = VALUES(${key})`)
+      const additionItems = wrappedKeys.map((key) => `${key} = VALUES(${key})`)
       query = `${query} ON DUPLICATE KEY UPDATE ${additionItems.join(', ')}`
     } else if (this._keepOldDataWhenDuplicate) {
-      const key = this._fixedKey
+      const key = CommonFuncs.wrapColumn(this._fixedKey)
       query = `${query} ON DUPLICATE KEY UPDATE ${key} = VALUES(${key})`
     }
     await this.database.update(query, values, this.transaction)

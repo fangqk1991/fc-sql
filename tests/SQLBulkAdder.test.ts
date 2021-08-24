@@ -113,4 +113,21 @@ describe('SQLBulkAdder', () => {
     const countAfter = await fetchRecordCount()
     assert.ok(countBefore + count === countAfter)
   })
+
+  it(`Test retain key`, async () => {
+    const count = 5
+    const bulkAdder = new SQLBulkAdder(demoDatabase)
+    bulkAdder.setTable('demo_table_3')
+    bulkAdder.setInsertKeys(['key1', 'key', 'create_time'])
+    bulkAdder.declareTimestampKey('create_time')
+    bulkAdder.useUpdateWhenDuplicate()
+    for (let i = 0; i < count; ++i) {
+      bulkAdder.putObject({
+        key1: `Bulk K1 - ${Math.random()}`,
+        key: `Bulk K2 - ${Math.random()}`,
+        create_time: new Date('2011-01-01'),
+      })
+    }
+    await bulkAdder.execute()
+  })
 })
