@@ -43,7 +43,7 @@ export class DBTableHandler {
       return false
     }
 
-    const sql = `CREATE TABLE \`${this.tableName}\` (rid INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY)`
+    const sql = `CREATE TABLE \`${this.tableName}\` (rid BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY)`
     await this.database.update(sql, [], this.transaction)
   }
 
