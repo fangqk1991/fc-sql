@@ -8,12 +8,20 @@ import { TransactionRunner } from './TransactionRunner'
 import { DBTableHandler } from './DBTableHandler'
 import { QueryOptionsWithType } from 'sequelize/types/lib/query-interface'
 import { SequelizeProtocol } from './SequelizeProtocol'
+import * as assert from 'assert'
 
 const _instanceMap: { [key: string]: any } = {}
 
+interface SubDatabase<T extends SequelizeProtocol = Sequelize> {
+  options?: Options
+  entity?: T
+}
+
 export class FCDatabase<T extends SequelizeProtocol = Sequelize> {
-  private __theDatabase?: T
-  private _options!: Options
+  private __subDatabaseMap: { [dbKey: string]: SubDatabase<T> } = {
+    _default: {},
+  }
+  private __curDbKey = '_default'
 
   public static instanceWithName<T extends SequelizeProtocol = Sequelize>(name: string): FCDatabase<T> {
     let obj = null
@@ -30,13 +38,39 @@ export class FCDatabase<T extends SequelizeProtocol = Sequelize> {
     return (this as any).instanceWithName('default')
   }
 
-  public init(options: Options) {
-    this._options = options
+  private __subDatabase(dbKey: string): SubDatabase<T> {
+    if (!this.__subDatabaseMap[dbKey]) {
+      this.__subDatabaseMap[dbKey] = {}
+    }
+    return this.__subDatabaseMap[dbKey]
+  }
+
+  public setCurDbKey(dbKey: string) {
+    this.__curDbKey = dbKey
+    return this
+  }
+
+  private __curDatabase() {
+    return this.__subDatabase(this.__curDbKey)
+  }
+
+  public init(options: Options, dbKey?: string) {
+    dbKey = dbKey || this.__curDbKey
+    this.__subDatabase(dbKey).options = options
+    return this
+  }
+
+  /**
+   * @deprecated
+   */
+  public setSequelizeProtocol(protocol: T, dbKey?: string) {
+    dbKey = dbKey || this.__curDbKey
+    this.__subDatabase(dbKey).entity = protocol
     return this
   }
 
   public dbName() {
-    return this._options.database as string
+    return this.__curDatabase().options!.database as string
   }
 
   public async query(
@@ -89,15 +123,13 @@ export class FCDatabase<T extends SequelizeProtocol = Sequelize> {
     return this._db().query(query, options)
   }
 
-  public setSequelizeProtocol(protocol: T) {
-    this.__theDatabase = protocol
-  }
-
   public _db(): T {
-    if (!this.__theDatabase) {
-      this.__theDatabase = new Sequelize(this._options) as any as T
+    const database = this.__curDatabase()
+    if (!database.entity) {
+      assert.ok(!!database.options, `${this.__curDbKey}'s options uninitialized.`)
+      database.entity = new Sequelize(database.options) as any as T
     }
-    return this.__theDatabase
+    return database.entity!
   }
 
   public searcher() {
@@ -130,8 +162,11 @@ export class FCDatabase<T extends SequelizeProtocol = Sequelize> {
   }
 
   public async ping() {
+    const database = this.__curDatabase()
     await this.query('SELECT 1').catch((err) => {
-      throw new Error(`[${this._options?.username} -> ${this._options?.database}] ${err.message}`)
+      throw new Error(
+        `[${this.__curDbKey}][${database.options?.username} -> ${database.options?.database}] ${err.message}`
+      )
     })
     return 'PONG'
   }
