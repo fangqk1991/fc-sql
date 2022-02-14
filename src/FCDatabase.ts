@@ -54,6 +54,14 @@ export class FCDatabase<T extends SequelizeProtocol = Sequelize> {
     return this.__subDatabase(this.__curDbKey)
   }
 
+  public getSubDatabase(dbKey: string) {
+    return this.__subDatabase(dbKey)
+  }
+
+  public checkSubDatabaseValid(dbKey: string) {
+    return !!this.__subDatabase(dbKey).options
+  }
+
   public init(options: Options, dbKey?: string) {
     dbKey = dbKey || this.__curDbKey
     this.__subDatabase(dbKey).options = options
