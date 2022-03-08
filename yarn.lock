@@ -222,10 +222,10 @@
     "@babel/helper-validator-identifier" "^7.14.8"
     to-fast-properties "^2.0.0"
 
-"@fangcha/eslint@^0.1.0":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@fangcha/eslint/-/eslint-0.1.0.tgz#321b6e943384c5ad17c4f4a2051f9a7d04a8c4b8"
-  integrity sha512-+mfCrsKeTaOPyxwoHe5yIPp/mHvZ22eWXDfe9mn/qAt/bmQZrNrPHMp5hwa1CtCZOVLzH8Sjvqbe0/d+jyhVrQ==
+"@fangcha/eslint@^0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@fangcha/eslint/-/eslint-0.2.0.tgz#aca6b6a1e57fd4fb0de809bad38bfdcc7f1baec2"
+  integrity sha512-iMu/7BZ+LhC4BGihCC+j4O03eovtN0039bTjGpE0L51j4qeq80yLmprk61S0EdZEgePD4tIU+z++E1jLn8TEwg==
   dependencies:
     "@typescript-eslint/eslint-plugin" "^2.19.0"
     "@typescript-eslint/parser" "^2.19.0"
@@ -240,6 +240,7 @@
     eslint-plugin-react "^7.18.3"
     eslint-plugin-standard "^4.0.1"
     eslint-plugin-vue "^6.1.2"
+    prettier "^2.5.1"
 
 "@istanbuljs/load-nyc-config@^1.0.0":
   version "1.1.0"
@@ -2331,10 +2332,10 @@ prettier-linter-helpers@^1.0.0:
   dependencies:
     fast-diff "^1.1.2"
 
-prettier@^2.0.5:
-  version "2.3.2"
-  resolved "https://registry.yarnpkg.com/prettier/-/prettier-2.3.2.tgz#ef280a05ec253712e486233db5c6f23441e7342d"
-  integrity sha512-lnJzDfJ66zkMy58OL5/NY5zp70S7Nz6KqcKkXYzn2tMVrNxvbqaBpg7H3qHaLxCJ5lNMsGuM8+ohS7cZrthdLQ==
+prettier@^2.5.1:
+  version "2.5.1"
+  resolved "https://registry.yarnpkg.com/prettier/-/prettier-2.5.1.tgz#fff75fa9d519c54cf0fce328c1017d94546bc56a"
+  integrity sha512-vBZcPRUR5MZJwoyi3ZoyQlc1rXeEck8KgeC9AwwOn+exuxLxq5toTRDTSaVrXHxelDMHy9zlicw8u66yxoSUFg==
 
 process-on-spawn@^1.0.0:
   version "1.0.0"
