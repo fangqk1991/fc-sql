@@ -104,8 +104,8 @@ export class FCDatabase<T extends SequelizeProtocol = Sequelize> {
         const keys = Object.keys(remainKeyMap)
         for (const key of keys) {
           if (Object.prototype.toString.call(item[key]) === '[object Date]') {
-            // console.log(`Convert "${key}"`)
-            item[key] = moment(item[key]).format()
+            const time = moment(item[key])
+            item[key] = time.isValid() ? time.format() : null
           } else {
             if (item[key] !== null && item[key] !== undefined) {
               delete remainKeyMap[key]
