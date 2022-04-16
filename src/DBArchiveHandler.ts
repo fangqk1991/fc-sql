@@ -55,6 +55,7 @@ export class DBArchiveHandler {
       searcher.setTable(tableName)
       searcher.setColumns(['*'])
       searcher.addSpecialCondition(`${columnName_createTime} < FROM_UNIXTIME(?)`, keyTs)
+      searcher.addOrderRule(columnName_primaryKey, 'ASC')
       searcher.setLimitInfo(0, pageSize)
       const items = await searcher.queryList()
       if (items.length > 0) {
