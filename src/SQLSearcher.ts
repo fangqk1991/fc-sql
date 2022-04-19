@@ -15,6 +15,7 @@ export class SQLSearcher extends SQLBuilderBase {
   private _optionStmts: (string | number)[] = []
   private _orderRules: { sortKey: string; sortDirection: OrderDirection }[] = []
   private _orderStmts: (string | number)[] = []
+  private _groupKeys: string[] = []
 
   /**
    * @description As 'DISTINCT' in select-sql
@@ -133,6 +134,9 @@ export class SQLSearcher extends SQLBuilderBase {
     if (conditions.length) {
       query = `${query} WHERE ${this.buildConditionStr()}`
     }
+    if (this._groupKeys.length > 0) {
+      query = `${query} GROUP BY ${this._groupKeys.join(', ')}`
+    }
     return { query: query, stmtValues: [...this.stmtValues()] }
   }
 
@@ -149,6 +153,7 @@ export class SQLSearcher extends SQLBuilderBase {
     }
     const data = this.exportSQL()
     let query = data.query
+
     const stmtValues = data.stmtValues
 
     if (this._optionStr) {
@@ -192,6 +197,7 @@ export class SQLSearcher extends SQLBuilderBase {
    */
   public async queryCount() {
     this.checkTableValid()
+    assert.ok(this._groupKeys.length === 0, `${this.constructor.name}: groupBy does not apply to queryCount func.`)
 
     let query
     if (this._distinct) {
@@ -207,5 +213,10 @@ export class SQLSearcher extends SQLBuilderBase {
 
     const result = await this.database.query(query, this.stmtValues(), this.transaction)
     return result[0]['count'] as number
+  }
+
+  public setGroupByKeys(keys: string[]) {
+    this._groupKeys = keys
+    return this
   }
 }
