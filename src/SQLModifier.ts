@@ -15,15 +15,21 @@ export class SQLModifier extends SQLBuilderBase {
    * @param value {string | number | null}
    */
   updateKV(key: string, value: string | number | null) {
-    this._updateColumns.push(`\`${key}\` = ?`)
+    if (/^\w+$/.test(key)) {
+      key = `\`${key}\``
+    }
+    this._updateColumns.push(`${key} = ?`)
     this._updateValues.push(value)
     return this
   }
 
   public updateKVForTimestamp(key: string, value: Date | string | any) {
+    if (/^\w+$/.test(key)) {
+      key = `\`${key}\``
+    }
     const tsValue = moment(value).unix() || null
     if (tsValue) {
-      this._updateColumns.push(`\`${key}\` = FROM_UNIXTIME(?)`)
+      this._updateColumns.push(`${key} = FROM_UNIXTIME(?)`)
       this._updateValues.push(tsValue)
     } else {
       this.updateKV(key, null)
