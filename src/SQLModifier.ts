@@ -37,6 +37,20 @@ export class SQLModifier extends SQLBuilderBase {
     return this
   }
 
+  public updateExpression(expression: string, ...args: (string | number | null)[]) {
+    return this._updateExpression(expression, args)
+  }
+
+  private _updateExpression(expression: string, args: (string | number | null)[]) {
+    assert.ok(
+      (expression.match(/\?/g) || []).length === args.length,
+      `${this.constructor.name}: _updateSpecialKV: Incorrect number of arguments.`
+    )
+    this._updateColumns.push(`${expression}`)
+    this._updateValues = this._updateValues.concat(args)
+    return this
+  }
+
   stmtValues(): (string | number | null)[] {
     return this._updateValues.concat(this.conditionValues)
   }
